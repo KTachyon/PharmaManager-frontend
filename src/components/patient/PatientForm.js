@@ -22,6 +22,7 @@ export const PatientForm = React.createClass({
         }
 
         return {
+            selfShow : true,
             showModal : false,
             patient : patient
         };
@@ -65,12 +66,12 @@ export const PatientForm = React.createClass({
     },
 
     close() {
-        this.props.close();
+        this.exit();
     },
 
     save() {
         RequestPromise(PatientRequests().upsert(this.getPatient())).then((patient) => {
-            this.props.onUpdate(patient); this.close();
+            this.props.onUpdate(patient); this.exit();
         });
     },
 
@@ -80,12 +81,20 @@ export const PatientForm = React.createClass({
 
     finishDelete() {
         RequestPromise(PatientRequests().delete(this.getPatient().get('id'))).then(() => {
-            this.props.onDelete(this.getPatient()); this.close();
+            this.props.onDelete(this.getPatient()); this.exit();
         });
     },
 
     cancel() {
-        this.close();
+        this.exit();
+    },
+
+    exit() {
+        this.setState({ selfShow : false });
+    },
+
+    onExited() {
+        this.props.close();
     },
 
     propertyChanged(id, key) {
@@ -122,7 +131,7 @@ export const PatientForm = React.createClass({
                 cancel={this.hideModal}
                 proceed={this.finishDelete}
             />
-            <Modal bsSize="large" show={true} onHide={this.cancel}>
+            <Modal bsSize="large" show={this.state.selfShow} onHide={this.cancel} onExited={this.onExited}>
                 <Modal.Header closeButton>
                     <Modal.Title>Create Patient</Modal.Title>
                 </Modal.Header>
