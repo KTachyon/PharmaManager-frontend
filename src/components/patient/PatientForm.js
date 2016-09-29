@@ -4,8 +4,8 @@ import { fromJS } from 'immutable';
 import { connect } from 'react-redux';
 import * as actions from '../../actions/remoteActions';
 import { generateUUID } from '../../utils/Generator';
-import request from 'browser-request';
 import { PatientRequests } from '../../RequestBuilder';
+import RequestPromise from '../../utils/RequestPromise';
 
 import DestructiveOpConfirmation from '../dialog/DestructiveOpConfirmation';
 
@@ -15,9 +15,15 @@ export const PatientForm = React.createClass({
     mixins : [PureRenderMixin],
 
     getInitialState() {
+        let patient = this.props.patient || fromJS({ properties : [] });
+
+        if (!patient.get('properties')) {
+            patient = patient.set('properties', []);
+        }
+
         return {
             showModal : false,
-            patient : this.props.patient || fromJS({ properties : [] })
+            patient : patient
         };
     },
 
@@ -63,38 +69,9 @@ export const PatientForm = React.createClass({
     },
 
     save() {
-        let self = this;
-        let id = this.getPatient().get('id');
-
-        if (id) { // TODO: upsert request!
-            request(PatientRequests().update(id, this.getPatient()), function(error, response) {
-                if (error) {
-                    // TODO: handle error, respect body
-                    return;
-                }
-
-                if (response.statusCode >= 400) {
-                    // TODO: handle error, respect body
-                    return;
-                }
-
-                self.close();
-            });
-        } else {
-            request(PatientRequests().create(this.getPatient()), function(error, response) {
-                if (error) {
-                    // TODO: handle error, respect body
-                    return;
-                }
-
-                if (response.statusCode >= 400) {
-                    // TODO: handle error, respect body
-                    return;
-                }
-
-                self.close();
-            });
-        }
+        RequestPromise(PatientRequests().upsert(this.getPatient())).then((patient) => {
+            this.props.onUpdate(patient); this.close();
+        });
     },
 
     delete() {
@@ -102,19 +79,13 @@ export const PatientForm = React.createClass({
     },
 
     finishDelete() {
-        console.log('deleted');
-
-        this.close();
+        RequestPromise(PatientRequests().delete(this.getPatient().get('id'))).then(() => {
+            this.props.onDelete(this.getPatient()); this.close();
+        });
     },
 
     cancel() {
-        console.log('cancel');
-
         this.close();
-    },
-
-    logState() {
-        console.log(this.getPatient().toJS());
     },
 
     propertyChanged(id, key) {
@@ -193,7 +164,6 @@ export const PatientForm = React.createClass({
                     <Button bsStyle="primary" onClick={this.save}>Save patient</Button>
                     {deleteButton}
                     <Button onClick={this.cancel}>Cancel</Button>
-                    <Button onClick={this.logState}>Log state</Button>
                 </Modal.Footer>
             </Modal>
         </div>;

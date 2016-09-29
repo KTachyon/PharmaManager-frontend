@@ -5,14 +5,16 @@ let baseCRUD = (identifier, hasSearch = false) => {
         getAll : () => {
             return {
                 method : 'GET',
-                url : baseURL + identifier
+                url : baseURL + identifier,
+                json : true
             };
         },
 
         get : (id) => {
             return {
                 method : 'GET',
-                url : baseURL + identifier + '/' + id
+                url : baseURL + identifier + '/' + id,
+                json : true
             };
         },
 
@@ -22,6 +24,14 @@ let baseCRUD = (identifier, hasSearch = false) => {
                 url : baseURL + identifier,
                 json : object
             };
+        },
+
+        upsert : (object) => {
+            let id = object.get('id');
+
+            if (id) { return RequestBuilderObject.update(id, object); }
+
+            return RequestBuilderObject.create(object);
         },
 
         update : (id, object) => {

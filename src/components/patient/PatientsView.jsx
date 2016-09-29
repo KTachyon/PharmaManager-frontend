@@ -5,12 +5,12 @@ import {connect} from 'react-redux';
 import PatientsList from './PatientsList';
 import SearchBar from '../SearchBar';
 import * as actions from '../../actions/remoteActions';
-import request from 'browser-request';
 import { PatientRequests } from '../../RequestBuilder';
 import { fromJS } from 'immutable';
 import { PatientForm } from './PatientForm';
 
 import { Panel, Col, Button } from 'react-bootstrap';
+import RequestPromise from '../../utils/RequestPromise';
 
 export const PatientsView = React.createClass({
     mixins : [PureRenderMixin],
@@ -20,20 +20,8 @@ export const PatientsView = React.createClass({
     },
 
     componentDidMount() {
-        var self = this;
-
-        request(PatientRequests().getAll(), function(error, response, body) {
-            if (error) {
-                // TODO: handle error, respect body
-                return;
-            }
-
-            if (response.statusCode >= 400) {
-                // TODO: handle error, respect body
-                return;
-            }
-
-            self.setState({ patients : fromJS( JSON.parse(body) ) });
+        RequestPromise(PatientRequests().getAll()).then((body) => {
+            this.setState({ patients : fromJS(body) });
         });
     },
 
@@ -42,24 +30,12 @@ export const PatientsView = React.createClass({
     },
 
     search(value) {
-        var self = this;
-
         if (value.length > 2) {
-            request(PatientRequests().search(value), function(error, response, body) {
-                if (error) {
-                    // TODO: handle error, respect body
-                    return;
-                }
-
-                if (response.statusCode >= 400) {
-                    // TODO: handle error, respect body
-                    return;
-                }
-
-                self.setState({ searchPatients : fromJS(body) });
+            RequestPromise(PatientRequests().search(value)).then((body) => {
+                this.setState({ searchPatients : fromJS(body) });
             });
         } else {
-            self.setState({ searchPatients : undefined });
+            this.setState({ searchPatients : undefined });
         }
     },
 
@@ -71,7 +47,47 @@ export const PatientsView = React.createClass({
         };
 
         ReactDOM.render(
-            <PatientForm close={closeModal} />,
+            <PatientForm close={closeModal} onUpdate={this.onPatientUpdate} />,
+            container
+        );
+    },
+
+    onPatientUpdate(patient) {
+        patient = fromJS(patient);
+
+        let existingPatient = this.getPatients().find((object) => {
+            return object.get('id') === patient.get('id');
+        });
+
+        if (existingPatient) {
+            let newPatients = this.getPatients().update(
+                this.getPatients().findIndex((item) => { return item.get('id') === patient.get('id'); }),
+                () => { return patient; }
+            );
+
+            this.setState({ patients : newPatients });
+        } else {
+            this.setState({ patients : this.getPatients().push(patient) });
+        }
+    },
+
+    onPatientDelete(patient) {
+        this.setState({ patients : this.getPatients().filter(p => p.get('id') !== patient.get('id')) });
+    },
+
+    updatePatient(patient) {
+        var container = ReactDOM.findDOMNode(this.refs.placeholder);
+        let closeModal = () => {
+            ReactDOM.unmountComponentAtNode(container);
+        };
+
+        ReactDOM.render(
+            <PatientForm
+                close={closeModal}
+                patient={patient}
+                onUpdate={this.onPatientUpdate}
+                onDelete={this.onPatientDelete}
+            />,
             container
         );
     },
@@ -86,7 +102,7 @@ export const PatientsView = React.createClass({
                 <Button onClick={this.createPatient}>Create Patient</Button>
             </Col>
             <Col sm={12}>
-                <PatientsList patients={this.getPatients()} />
+                <PatientsList patients={this.getPatients()} update={this.updatePatient} />
             </Col>
         </Panel>;
     }

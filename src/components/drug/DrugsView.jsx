@@ -4,7 +4,7 @@ import {connect} from 'react-redux';
 import DrugsList from './DrugsList';
 import SearchBar from '../SearchBar';
 import * as actions from '../../actions/remoteActions';
-import request from 'browser-request';
+import RequestPromise from '../../utils/RequestPromise';
 import { DrugRequests } from '../../RequestBuilder';
 import { fromJS } from 'immutable';
 
@@ -20,18 +20,8 @@ export const DrugsView = React.createClass({
     componentDidMount() {
         var self = this;
 
-        request(DrugRequests().getAll(), function(error, response, body) {
-            if (error) {
-                // TODO: handle error, respect body
-                return;
-            }
-
-            if (response.statusCode >= 400) {
-                // TODO: handle error, respect body
-                return;
-            }
-
-            self.setState({ drugs : fromJS( JSON.parse(body) ) });
+        RequestPromise(DrugRequests().getAll()).then((body) => {
+            self.setState({ drugs : fromJS(body) });
         });
     },
 
@@ -43,17 +33,7 @@ export const DrugsView = React.createClass({
         var self = this;
 
         if (value.length > 2) {
-            request(DrugRequests().search(value), function(error, response, body) {
-                if (error) {
-                    // TODO: handle error, respect body
-                    return;
-                }
-
-                if (response.statusCode >= 400) {
-                    // TODO: handle error, respect body
-                    return;
-                }
-
+            RequestPromise(DrugRequests().search(value)).then((body) => {
                 self.setState({ searchDrugs : fromJS(body) });
             });
         } else {
