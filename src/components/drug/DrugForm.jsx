@@ -1,67 +1,59 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 import PureRenderMixin from 'react-addons-pure-render-mixin';
 import { fromJS } from 'immutable';
 import { connect } from 'react-redux';
 import * as actions from '../../actions/remoteActions';
 import { generateUUID } from '../../utils/Generator';
-import { PatientRequests } from '../../RequestBuilder';
+import { DrugRequests } from '../../RequestBuilder';
 import RequestPromise from '../../utils/RequestPromise';
 
 import DestructiveOpConfirmation from '../dialog/DestructiveOpConfirmation';
 
 import { Button, FormGroup, FormControl, Form, ControlLabel, Col, Modal } from 'react-bootstrap';
 
-export const PatientForm = React.createClass({
+export const DrugForm = React.createClass({
     mixins : [PureRenderMixin],
 
     getInitialState() {
-        let patient = this.props.patient || fromJS({ properties : [] });
+        let drug = this.props.drug || fromJS({ properties : [] });
 
-        if (!patient.get('properties')) {
-            patient = patient.set('properties', []);
+        if (!drug.get('properties')) {
+            drug = drug.set('properties', []);
         }
 
         return {
             selfShow : true,
-            showModal : false,
-            patient : patient
+            drug : drug
         };
     },
 
-    updatePatient(newPatient) {
-        this.setState({ patient : newPatient });
+    updateDrug(newDrug) {
+        this.setState({ drug : newDrug });
     },
 
-    showModal() {
-        this.setState({ showModal : true });
-    },
-
-    hideModal() {
-        this.setState({ showModal : false });
-    },
-
-    getPatient() {
-        return this.state.patient;
+    getDrug() {
+        return this.state.drug;
     },
 
     addProperty() {
-        var properties = this.getPatient().get('properties');
+        var properties = this.getDrug().get('properties');
         var newProperties = properties.push( fromJS({ id : generateUUID() }) );
-        var newState = this.getPatient().set('properties', newProperties);
+        var newState = this.getDrug().set('properties', newProperties);
 
-        this.updatePatient(newState);
+        this.updateDrug(newState);
     },
 
     removeProperty(id) {
         return () => {
-            var properties = this.getPatient().get('properties');
+            var properties = this.getDrug().get('properties');
             var newProperties = properties.filter( (obj) => {
                 return obj.get('id') !== id;
             });
 
-            var newState = this.getPatient().set('properties', newProperties);
+            var newState = this.getDrug().set('properties', newProperties);
 
-            this.updatePatient(newState);
+            this.updateDrug(newState);
         };
     },
 
@@ -70,18 +62,32 @@ export const PatientForm = React.createClass({
     },
 
     save() {
-        RequestPromise(PatientRequests().upsert(this.getPatient())).then((patient) => {
-            this.props.onUpdate(patient); this.exit();
+        RequestPromise(DrugRequests().upsert(this.getDrug())).then((drug) => {
+            this.props.onUpdate(drug); this.exit();
         });
     },
 
     delete() {
-        this.showModal();
+        var container = ReactDOM.findDOMNode(this.refs.placeholder);
+
+        let closeModal = () => {
+            ReactDOM.unmountComponentAtNode(container);
+        };
+
+        ReactDOM.render(
+            <DestructiveOpConfirmation close={closeModal}
+                title="Are you sure?"
+                text="This operation is not reversible."
+                //cancel={this.hideModal}
+                proceed={this.finishDelete}
+            />,
+            container
+        );
     },
 
     finishDelete() {
-        RequestPromise(PatientRequests().delete(this.getPatient().get('id'))).then(() => {
-            this.props.onDelete(this.getPatient()); this.exit();
+        RequestPromise(DrugRequests().delete(this.getDrug().get('id'))).then(() => {
+            this.props.onDelete(this.getDrug()); this.exit();
         });
     },
 
@@ -99,7 +105,7 @@ export const PatientForm = React.createClass({
 
     propertyChanged(id, key) {
         return (event) => {
-            var properties = this.getPatient().get('properties');
+            var properties = this.getDrug().get('properties');
             var newProperties = properties.update(
                 properties.findIndex((property) => {
                     return property.get('id') === id;
@@ -107,48 +113,58 @@ export const PatientForm = React.createClass({
                 (item) => { return item.set(key, event.currentTarget.value); }
             );
 
-            var newState = this.getPatient().set('properties', newProperties);
+            var newState = this.getDrug().set('properties', newProperties);
 
-            this.updatePatient(newState);
+            this.updateDrug(newState);
         };
     },
 
     nameChanged : function(event) {
-        this.updatePatient( this.getPatient().set('name', event.currentTarget.value) );
+        this.updateDrug( this.getDrug().set('name', event.currentTarget.value) );
     },
 
     render() {
         let deleteButton;
+        let drug = this.getDrug();
 
-        if (this.getPatient().get('id')) {
-            deleteButton = <Button bsStyle="danger" onClick={this.delete}>Delete patient</Button>;
+        if (drug.get('id')) {
+            deleteButton = <Button bsStyle="danger" onClick={this.delete}>Delete drug</Button>;
         }
 
         return <div>
-            <DestructiveOpConfirmation showModal={this.state.showModal}
-                title="Are you sure?"
-                text="This operation is not reversible."
-                cancel={this.hideModal}
-                proceed={this.finishDelete}
-            />
+            <div ref="placeholder"></div>
             <Modal bsSize="large" show={this.state.selfShow} onHide={this.cancel} onExited={this.onExited}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Create Patient</Modal.Title>
+                    <Modal.Title>Create Drug</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <Form horizontal>
                         <FormGroup>
                             <Col componentClass={ControlLabel} sm={2}>
-                                Patient Name
+                                Drug Name
                             </Col>
-                            <Col sm={7}>
-                                <FormControl type="text" placeholder="Patient Name" value={this.getPatient().get('name')} onChange={this.nameChanged} />
+                            <Col sm={8}>
+                                <FormControl type="text" placeholder="Drug name" value={drug.get('name')} onChange={this.nameChanged} />
+                            </Col>
+                        </FormGroup>
+                        <FormGroup>
+                            <Col componentClass={ControlLabel} sm={2}>
+                                Dose
+                            </Col>
+                            <Col sm={3}>
+                                <FormControl type="text" placeholder="Dosage value" value={drug.get('dose')} onChange={this.nameChanged} />
+                            </Col>
+                            <Col componentClass={ControlLabel} sm={2}>
+                                Unit
+                            </Col>
+                            <Col sm={3}>
+                                <FormControl type="text" placeholder="Dosage unit" value={drug.get('unit')} onChange={this.nameChanged} />
                             </Col>
                             <Col sm={1}>
                                 <Button onClick={this.addProperty}>Add property</Button>
                             </Col>
                         </FormGroup>
-                        {this.getPatient().get('properties').map((obj) => {
+                        {drug.get('properties').map((obj) => {
                             return <FormGroup key={obj.get('id')}>
                                 <Col componentClass={ControlLabel} sm={2}>
                                     Key
@@ -156,6 +172,7 @@ export const PatientForm = React.createClass({
                                 <Col sm={3}>
                                     <FormControl type="text" placeholder="Key" value={obj.get('key')} onChange={this.propertyChanged(obj.get('id'), 'key')} />
                                 </Col>
+                                <Col sm={1}></Col>
                                 <Col componentClass={ControlLabel} sm={1}>
                                     Value
                                 </Col>
@@ -170,7 +187,7 @@ export const PatientForm = React.createClass({
                     </Form>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button bsStyle="primary" onClick={this.save}>Save patient</Button>
+                    <Button bsStyle="primary" onClick={this.save}>Save drug</Button>
                     {deleteButton}
                     <Button onClick={this.cancel}>Cancel</Button>
                 </Modal.Footer>
@@ -183,8 +200,8 @@ export const PatientForm = React.createClass({
 
 function mapStateToProps(state) {
     return {
-        patient: state.get('patient')
+        drug: state.get('drug')
     };
 }
 
-export const PatientFormContainer = connect(mapStateToProps, actions)(PatientForm);
+export const DrugFormContainer = connect(mapStateToProps, actions)(DrugForm);

@@ -5,12 +5,14 @@ import {connect} from 'react-redux';
 import PatientsList from './PatientsList';
 import SearchBar from '../SearchBar';
 import * as actions from '../../actions/remoteActions';
+import RequestPromise from '../../utils/RequestPromise';
 import { PatientRequests } from '../../RequestBuilder';
 import { fromJS } from 'immutable';
 import { PatientForm } from './PatientForm';
 
+import DestructiveOpConfirmation from '../dialog/DestructiveOpConfirmation';
+
 import { Panel, Col, Button } from 'react-bootstrap';
-import RequestPromise from '../../utils/RequestPromise';
 
 export const PatientsView = React.createClass({
     mixins : [PureRenderMixin],
@@ -71,8 +73,28 @@ export const PatientsView = React.createClass({
         }
     },
 
+    deletePatient(patient) {
+        var container = ReactDOM.findDOMNode(this.refs.placeholder);
+
+        let closeModal = () => {
+            ReactDOM.unmountComponentAtNode(container);
+        };
+
+        ReactDOM.render(
+            <DestructiveOpConfirmation close={closeModal}
+                title="Are you sure?"
+                text="This operation is not reversible."
+                //cancel={this.hideModal}
+                proceed={() => { this.onPatientDelete(patient); }}
+            />,
+            container
+        );
+    },
+
     onPatientDelete(patient) {
-        this.setState({ patients : this.getPatients().filter(p => p.get('id') !== patient.get('id')) });
+        RequestPromise(PatientRequests().delete(patient.get('id'))).then(() => {
+            this.setState({ patients : this.getPatients().filter(p => p.get('id') !== patient.get('id')) });
+        });
     },
 
     updatePatient(patient) {
@@ -102,7 +124,7 @@ export const PatientsView = React.createClass({
                 <Button onClick={this.createPatient}>Create Patient</Button>
             </Col>
             <Col sm={12}>
-                <PatientsList patients={this.getPatients()} update={this.updatePatient} />
+                <PatientsList patients={this.getPatients()} update={this.updatePatient} delete={this.deletePatient} />
             </Col>
         </Panel>;
     }

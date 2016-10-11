@@ -18,7 +18,7 @@ export default React.createClass({
 
         return <ListGroup>
             {this.getPatients().map(patient =>
-                <PatientItem key={patient.get('id')} obj={patient} update={this.props.update} />
+                <PatientItem key={patient.get('id')} obj={patient} update={this.props.update} delete={this.props.delete} />
             )}
         </ListGroup>;
     }

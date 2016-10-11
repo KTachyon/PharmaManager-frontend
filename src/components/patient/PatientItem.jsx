@@ -12,11 +12,7 @@ export default React.createClass({
     },
 
     delete() {
-        
-    },
-
-    finishDelete() {
-
+        return this.props.delete(this.getPatient());
     },
 
     update() {

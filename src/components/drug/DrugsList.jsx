@@ -6,6 +6,7 @@ import { ListGroup } from 'react-bootstrap';
 
 export default React.createClass({
     mixins : [PureRenderMixin],
+
     getDrugs: function() {
         return this.props.drugs;
     },
@@ -17,7 +18,7 @@ export default React.createClass({
 
         return <ListGroup>
             {this.getDrugs().map(drug =>
-                <DrugItem key={drug.get('id')} obj={drug} />
+                <DrugItem key={drug.get('id')} obj={drug} update={this.props.update} delete={this.props.delete} />
             )}
         </ListGroup>;
     }
