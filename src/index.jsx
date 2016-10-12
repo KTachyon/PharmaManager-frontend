@@ -16,6 +16,8 @@ import { DrugsViewContainer } from './components/drug/DrugsView';
 import { DrugViewContainer } from './components/drug/DrugView';
 import { PatientForm } from './components/patient/PatientForm';
 
+import Test from './components/Test';
+
 //const createStoreWithMiddleware = applyMiddleware(remoteMidleware)(createStore);
 //const store = createStoreWithMiddleware(reducer);
 
@@ -34,6 +36,9 @@ const routes = <Route path="/" component={App}>
     </Route>
     <Route path="pt">
         <IndexRoute component={PatientForm} />
+    </Route>
+    <Route path="test">
+        <IndexRoute component={Test} />
     </Route>
 </Route>;
 
