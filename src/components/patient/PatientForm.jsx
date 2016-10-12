@@ -119,8 +119,10 @@ export const PatientForm = React.createClass({
         };
     },
 
-    nameChanged : function(event) {
-        this.updatePatient( this.getPatient().set('name', event.currentTarget.value) );
+    namedValueChanged(key) {
+        return () => {
+            this.updatePatient( this.getPatient().set(key, event.currentTarget.value) );
+        };
     },
 
     render() {
@@ -144,7 +146,7 @@ export const PatientForm = React.createClass({
                                 Patient Name
                             </Col>
                             <Col sm={7}>
-                                <FormControl type="text" placeholder="Patient Name" value={patient.get('name')} onChange={this.nameChanged} />
+                                <FormControl type="text" placeholder="Patient Name" value={patient.get('name')} onChange={this.namedValueChanged('name')} />
                             </Col>
                             <Col sm={1}>
                                 <Button onClick={this.addProperty}>Add property</Button>
@@ -155,13 +157,13 @@ export const PatientForm = React.createClass({
                                 NIF
                             </Col>
                             <Col sm={3}>
-                                <FormControl type="text" placeholder="NIF" value={patient.get('nif')} onChange={this.nameChanged} />
+                                <FormControl type="text" placeholder="NIF" value={patient.get('nif')} onChange={this.namedValueChanged('nif')} />
                             </Col>
                             <Col componentClass={ControlLabel} sm={2}>
                                 SNS
                             </Col>
                             <Col sm={3}>
-                                <FormControl type="text" placeholder="SNS" value={patient.get('sns')} onChange={this.nameChanged} />
+                                <FormControl type="text" placeholder="SNS" value={patient.get('sns')} onChange={this.namedValueChanged('sns')} />
                             </Col>
                             <Col sm={1}>
                                 <Button onClick={this.addProperty}>Add property</Button>

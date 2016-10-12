@@ -19,6 +19,7 @@ module.exports = {
         "react"
     ],
     "ecmaFeatures": {
+        "classes": true,
         "jsx": true
     },
     "rules": {

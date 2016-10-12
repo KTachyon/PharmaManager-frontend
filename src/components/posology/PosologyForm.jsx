@@ -5,55 +5,59 @@ import { fromJS } from 'immutable';
 import { connect } from 'react-redux';
 import * as actions from '../../actions/remoteActions';
 import { generateUUID } from '../../utils/Generator';
-import { DrugRequests } from '../../RequestBuilder';
+import { PosologyRequests } from '../../RequestBuilder';
 import RequestPromise from '../../utils/RequestPromise';
 
 import DestructiveOpConfirmation from '../dialog/DestructiveOpConfirmation';
 
 import { Button, FormGroup, FormControl, Form, ControlLabel, Col, Modal } from 'react-bootstrap';
 
-export const DrugForm = React.createClass({
+export const PosologyForm = React.createClass({
     mixins : [PureRenderMixin],
 
     getInitialState() {
-        let drug = this.props.drug || fromJS({ properties : [] });
+        let posology = this.props.posology || fromJS({ properties : [] });
 
-        if (!drug.get('properties')) {
-            drug = drug.set('properties', []);
+        if (!posology.get('properties')) {
+            posology = posology.set('properties', []);
         }
 
         return {
             selfShow : true,
-            drug : drug
+            posology : posology
         };
     },
 
-    updateDrug(newDrug) {
-        this.setState({ drug : newDrug });
+    updatePosology(newPosology) {
+        this.setState({ posology : newPosology });
     },
 
-    getDrug() {
-        return this.state.drug;
+    getPosology() {
+        return this.state.posology;
     },
 
     addProperty() {
-        var properties = this.getDrug().get('properties');
-        var newProperties = properties.push( fromJS({ id : generateUUID() }) );
-        var newState = this.getDrug().set('properties', newProperties);
+        let posology = this.getPosology();
 
-        this.updateDrug(newState);
+        let properties = posology.get('properties');
+        let newProperties = properties.push( fromJS({ id : generateUUID() }) );
+        let newState = posology.set('properties', newProperties);
+
+        this.updatePosology(newState);
     },
 
     removeProperty(id) {
         return () => {
-            var properties = this.getDrug().get('properties');
-            var newProperties = properties.filter( (obj) => {
+            let posology = this.getPosology();
+
+            let properties = posology.get('properties');
+            let newProperties = properties.filter( (obj) => {
                 return obj.get('id') !== id;
             });
 
-            var newState = this.getDrug().set('properties', newProperties);
+            let newState = posology.set('properties', newProperties);
 
-            this.updateDrug(newState);
+            this.updatePosology(newState);
         };
     },
 
@@ -62,8 +66,8 @@ export const DrugForm = React.createClass({
     },
 
     save() {
-        RequestPromise(DrugRequests().upsert(this.getDrug())).then((drug) => {
-            this.props.onUpdate(drug); this.exit();
+        RequestPromise(PosologyRequests().upsert(this.getPosology())).then((posology) => {
+            this.props.onUpdate(posology); this.exit();
         });
     },
 
@@ -78,7 +82,6 @@ export const DrugForm = React.createClass({
             <DestructiveOpConfirmation close={closeModal}
                 title="Are you sure?"
                 text="This operation is not reversible."
-                //cancel={this.hideModal}
                 proceed={this.finishDelete}
             />,
             container
@@ -86,8 +89,8 @@ export const DrugForm = React.createClass({
     },
 
     finishDelete() {
-        RequestPromise(DrugRequests().delete(this.getDrug().get('id'))).then(() => {
-            this.props.onDelete(this.getDrug()); this.exit();
+        RequestPromise(PosologyRequests().delete(this.getPosology().get('id'))).then(() => {
+            this.props.onDelete(this.getPosology()); this.exit();
         });
     },
 
@@ -105,17 +108,19 @@ export const DrugForm = React.createClass({
 
     propertyChanged(id, key) {
         return (event) => {
-            var properties = this.getDrug().get('properties');
-            var newProperties = properties.update(
+            let posology = this.getPosology();
+
+            let properties = posology.get('properties');
+            let newProperties = properties.update(
                 properties.findIndex((property) => {
                     return property.get('id') === id;
                 }),
                 (item) => { return item.set(key, event.currentTarget.value); }
             );
 
-            var newState = this.getDrug().set('properties', newProperties);
+            let newState = posology.set('properties', newProperties);
 
-            this.updateDrug(newState);
+            this.updatePosology(newState);
         };
     },
 
@@ -127,46 +132,52 @@ export const DrugForm = React.createClass({
 
     render() {
         let deleteButton;
-        let drug = this.getDrug();
+        let patient = this.getPatient();
 
-        if (drug.get('id')) {
-            deleteButton = <Button bsStyle="danger" onClick={this.delete}>Delete drug</Button>;
+        if (patient.get('id')) {
+            deleteButton = <Button bsStyle="danger" onClick={this.delete}>Delete patient</Button>;
         }
 
         return <div>
             <div ref="placeholder"></div>
             <Modal bsSize="large" show={this.state.selfShow} onHide={this.cancel} onExited={this.onExited}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Create Drug</Modal.Title>
+                    <Modal.Title>Create Patient</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <Form horizontal>
                         <FormGroup>
                             <Col componentClass={ControlLabel} sm={2}>
-                                Drug Name
+                                Start date
                             </Col>
-                            <Col sm={8}>
-                                <FormControl type="text" placeholder="Drug name" value={drug.get('name')} onChange={this.namedValueChanged('name')} />
+                            <Col sm={3}>
+                                <FormControl type="date" placeholder="Start date" value={patient.get('startDate')} onChange={this.namedValueChanged('startDate')} />
+                            </Col>
+                            <Col componentClass={ControlLabel} sm={2}>
+                                Discontinue at
+                            </Col>
+                            <Col sm={3}>
+                                <FormControl type="date" placeholder="Discontinue at" value={patient.get('discontinueAt')} onChange={this.namedValueChanged('discontinueAt')} />
                             </Col>
                         </FormGroup>
                         <FormGroup>
                             <Col componentClass={ControlLabel} sm={2}>
-                                Dose
+                                Intake interval
                             </Col>
                             <Col sm={3}>
-                                <FormControl type="text" placeholder="Dosage value" value={drug.get('dose')} onChange={this.namedValueChanged('dose')} />
+                                <FormControl type="number" placeholder="Intake interval" value={patient.get('intakeInterval')} onChange={this.namedValueChanged('intakeInterval')} />
                             </Col>
                             <Col componentClass={ControlLabel} sm={2}>
-                                Unit
+                                Intake quantity
                             </Col>
                             <Col sm={3}>
-                                <FormControl type="text" placeholder="Dosage unit" value={drug.get('unit')} onChange={this.namedValueChanged('unit')} />
+                                <FormControl type="number" placeholder="Intake quantity" value={patient.get('intakeQuantity')} onChange={this.namedValueChanged('intakeQuantity')} />
                             </Col>
                             <Col sm={1}>
                                 <Button onClick={this.addProperty}>Add property</Button>
                             </Col>
                         </FormGroup>
-                        {drug.get('properties').map((obj) => {
+                        {patient.get('properties').map((obj) => {
                             return <FormGroup key={obj.get('id')}>
                                 <Col componentClass={ControlLabel} sm={2}>
                                     Key
@@ -189,7 +200,7 @@ export const DrugForm = React.createClass({
                     </Form>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button bsStyle="primary" onClick={this.save}>Save drug</Button>
+                    <Button bsStyle="primary" onClick={this.save}>Save patient</Button>
                     {deleteButton}
                     <Button onClick={this.cancel}>Cancel</Button>
                 </Modal.Footer>
@@ -202,8 +213,8 @@ export const DrugForm = React.createClass({
 
 function mapStateToProps(state) {
     return {
-        drug: state.get('drug')
+        posology: state.get('posology')
     };
 }
 
-export const DrugFormContainer = connect(mapStateToProps, actions)(DrugForm);
+export const PosologyFormContainer = connect(mapStateToProps, actions)(PosologyForm);
