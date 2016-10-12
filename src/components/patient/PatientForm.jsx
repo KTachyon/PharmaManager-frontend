@@ -120,7 +120,7 @@ export const PatientForm = React.createClass({
     },
 
     namedValueChanged(key) {
-        return () => {
+        return (event) => {
             this.updatePatient( this.getPatient().set(key, event.currentTarget.value) );
         };
     },

@@ -125,7 +125,7 @@ export const PosologyForm = React.createClass({
     },
 
     namedValueChanged(key) {
-        return () => {
+        return (event) => {
             this.updatePosology( this.getPosology().set(key, event.currentTarget.value) );
         };
     },
