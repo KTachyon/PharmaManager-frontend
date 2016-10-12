@@ -121,7 +121,7 @@ export const DrugForm = React.createClass({
 
     namedValueChanged(key) {
         return () => {
-            this.updatePatient( this.getPatient().set(key, event.currentTarget.value) );
+            this.updatePatient( this.getDrug().set(key, event.currentTarget.value) );
         };
     },
 

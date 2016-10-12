@@ -126,23 +126,23 @@ export const PosologyForm = React.createClass({
 
     namedValueChanged(key) {
         return () => {
-            this.updatePatient( this.getPatient().set(key, event.currentTarget.value) );
+            this.updatePosology( this.getPosology().set(key, event.currentTarget.value) );
         };
     },
 
     render() {
         let deleteButton;
-        let patient = this.getPatient();
+        let posology = this.getPosology();
 
-        if (patient.get('id')) {
-            deleteButton = <Button bsStyle="danger" onClick={this.delete}>Delete patient</Button>;
+        if (posology.get('id')) {
+            deleteButton = <Button bsStyle="danger" onClick={this.delete}>Delete posology</Button>;
         }
 
         return <div>
             <div ref="placeholder"></div>
             <Modal bsSize="large" show={this.state.selfShow} onHide={this.cancel} onExited={this.onExited}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Create Patient</Modal.Title>
+                    <Modal.Title>Create posology</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <Form horizontal>
@@ -151,13 +151,13 @@ export const PosologyForm = React.createClass({
                                 Start date
                             </Col>
                             <Col sm={3}>
-                                <FormControl type="date" placeholder="Start date" value={patient.get('startDate')} onChange={this.namedValueChanged('startDate')} />
+                                <FormControl type="date" placeholder="Start date" value={posology.get('startDate')} onChange={this.namedValueChanged('startDate')} />
                             </Col>
                             <Col componentClass={ControlLabel} sm={2}>
                                 Discontinue at
                             </Col>
                             <Col sm={3}>
-                                <FormControl type="date" placeholder="Discontinue at" value={patient.get('discontinueAt')} onChange={this.namedValueChanged('discontinueAt')} />
+                                <FormControl type="date" placeholder="Discontinue at" value={posology.get('discontinueAt')} onChange={this.namedValueChanged('discontinueAt')} />
                             </Col>
                         </FormGroup>
                         <FormGroup>
@@ -165,19 +165,19 @@ export const PosologyForm = React.createClass({
                                 Intake interval
                             </Col>
                             <Col sm={3}>
-                                <FormControl type="number" placeholder="Intake interval" value={patient.get('intakeInterval')} onChange={this.namedValueChanged('intakeInterval')} />
+                                <FormControl type="number" placeholder="Intake interval" value={posology.get('intakeInterval')} onChange={this.namedValueChanged('intakeInterval')} />
                             </Col>
                             <Col componentClass={ControlLabel} sm={2}>
                                 Intake quantity
                             </Col>
                             <Col sm={3}>
-                                <FormControl type="number" placeholder="Intake quantity" value={patient.get('intakeQuantity')} onChange={this.namedValueChanged('intakeQuantity')} />
+                                <FormControl type="number" placeholder="Intake quantity" value={posology.get('intakeQuantity')} onChange={this.namedValueChanged('intakeQuantity')} />
                             </Col>
                             <Col sm={1}>
                                 <Button onClick={this.addProperty}>Add property</Button>
                             </Col>
                         </FormGroup>
-                        {patient.get('properties').map((obj) => {
+                        {posology.get('properties').map((obj) => {
                             return <FormGroup key={obj.get('id')}>
                                 <Col componentClass={ControlLabel} sm={2}>
                                     Key
@@ -200,7 +200,7 @@ export const PosologyForm = React.createClass({
                     </Form>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button bsStyle="primary" onClick={this.save}>Save patient</Button>
+                    <Button bsStyle="primary" onClick={this.save}>Save posology</Button>
                     {deleteButton}
                     <Button onClick={this.cancel}>Cancel</Button>
                 </Modal.Footer>
