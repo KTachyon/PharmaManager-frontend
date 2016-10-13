@@ -78,3 +78,11 @@ export let DrugRequests = () => {
 export let PosologyRequests = (patientID) => {
     return baseNestedCRUD('posology', 'patients', patientID);
 };
+
+export let DrugBoxRequests = (patientID) => {
+    return baseNestedCRUD('drugBox', 'patients', patientID);
+};
+
+export let DrugStockRequests = (patientID) => {
+    return baseNestedCRUD('drugStock', 'patients', patientID);
+};

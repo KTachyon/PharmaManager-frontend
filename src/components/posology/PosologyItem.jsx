@@ -1,7 +1,15 @@
 import React from 'react';
 import PureRenderMixin from 'react-addons-pure-render-mixin';
+import _ from 'lodash';
 
 import { ListGroupItem, Button, ButtonToolbar } from 'react-bootstrap';
+
+const timeMap = [
+    'Breakfast',
+    'Lunch',
+    'Mid Afternoon',
+    'Dinner'
+];
 
 export default React.createClass({
     mixins : [PureRenderMixin],
@@ -22,10 +30,23 @@ export default React.createClass({
         let posology = this.getPosology();
         let drug = posology.get('drug');
 
+        let descriptor = `Take ${posology.get('intakeQuantity')} ${drug.get('name')} (${drug.get('dose')} ${drug.get('unit')}) @ `;
+
+        let times = posology.get('intakeTimes').reduce(function(memo, value, position) {
+            if (value) {
+                memo = memo.length ? memo + ', ' : memo;
+                memo = memo + timeMap[position];
+            }
+
+            return memo;
+        }, '');
+
+        descriptor = descriptor + '[ ' + times + ' ]';
+
         return <div>
             <div id="modalPlaceholder"></div>
             <ListGroupItem>
-                {`Take ${posology.get('intakeQuantity')} ${drug.get('name')} (${drug.get('dose')} ${drug.get('unit')}) every ${posology.get('intakeInterval')} hours`}
+                {descriptor}
                 <ButtonToolbar>
                     <Button onClick={this.update}>Update</Button>
                     <Button bsStyle="danger" onClick={this.delete}>Delete</Button>

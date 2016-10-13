@@ -5,6 +5,8 @@ import { PatientRequests } from '../../RequestBuilder';
 import { fromJS } from 'immutable';
 
 import { PosologyView } from '../posology/PosologyView';
+import { DrugBoxView } from '../boxes/DrugBoxView';
+import { DrugStockView } from '../stock/DrugStockView';
 import { Panel } from 'react-bootstrap';
 
 export const PatientView = React.createClass({
@@ -44,8 +46,10 @@ export const PatientView = React.createClass({
             <PosologyView patientID={this.getPatientID()} />
             <hr />
             <h2>Boxes</h2>
+            <DrugBoxView patientID={this.getPatientID()} />
             <hr />
             <h2>Stock</h2>
+            <DrugStockView patientID={this.getPatientID()} />
         </Panel>;
     }
 });

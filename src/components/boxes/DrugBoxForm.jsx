@@ -3,65 +3,61 @@ import ReactDOM from 'react-dom';
 import PureRenderMixin from 'react-addons-pure-render-mixin';
 import { fromJS } from 'immutable';
 import { generateUUID } from '../../utils/Generator';
-import { PosologyRequests } from '../../RequestBuilder';
+import { DrugBoxRequests } from '../../RequestBuilder';
 import RequestPromise from '../../utils/RequestPromise';
 import DrugSearchForm from '../drug/DrugSearchForm';
 
 import DestructiveOpConfirmation from '../dialog/DestructiveOpConfirmation';
 
-import { Button, FormGroup, FormControl, Form, ControlLabel, Col, Modal, Checkbox } from 'react-bootstrap';
+import { Button, FormGroup, FormControl, Form, ControlLabel, Col, Modal } from 'react-bootstrap';
 
-export const PosologyForm = React.createClass({
+export const DrugBoxForm = React.createClass({
     mixins : [PureRenderMixin],
 
     getInitialState() {
-        let posology = this.props.posology || fromJS({ properties : [] });
+        let drugBox = this.props.drugBox || fromJS({ properties : [] });
 
-        if (!posology.get('properties')) {
-            posology = posology.set('properties', []);
-        }
-
-        if (!posology.get('intakeTimes')) {
-            posology = posology.set('intakeTimes', fromJS([false, false, false, false]));
+        if (!drugBox.get('properties')) {
+            drugBox = drugBox.set('properties', []);
         }
 
         return {
             selfShow : true,
-            posology : posology,
-            drug : posology.get('drug')
+            drugBox : drugBox,
+            drug : drugBox.get('drug')
         };
     },
 
-    updatePosology(newPosology) {
-        this.setState({ posology : newPosology });
+    updateDrugBox(newDrugBox) {
+        this.setState({ drugBox : newDrugBox });
     },
 
-    getPosology() {
-        return this.state.posology;
+    getDrugBox() {
+        return this.state.drugBox;
     },
 
     addProperty() {
-        let posology = this.getPosology();
+        let drugBox = this.getDrugBox();
 
-        let properties = posology.get('properties');
+        let properties = drugBox.get('properties');
         let newProperties = properties.push( fromJS({ id : generateUUID() }) );
-        let newState = posology.set('properties', newProperties);
+        let newState = drugBox.set('properties', newProperties);
 
-        this.updatePosology(newState);
+        this.updateDrugBox(newState);
     },
 
     removeProperty(id) {
         return () => {
-            let posology = this.getPosology();
+            let drugBox = this.getDrugBox();
 
-            let properties = posology.get('properties');
+            let properties = drugBox.get('properties');
             let newProperties = properties.filter( (obj) => {
                 return obj.get('id') !== id;
             });
 
-            let newState = posology.set('properties', newProperties);
+            let newState = drugBox.set('properties', newProperties);
 
-            this.updatePosology(newState);
+            this.updateDrugBox(newState);
         };
     },
 
@@ -70,10 +66,10 @@ export const PosologyForm = React.createClass({
     },
 
     save() {
-        let requestSavePosology = this.getPosology().set('DrugId', this.state.drug.get('id'));
+        let requestSaveDrugBox = this.getDrugBox().set('DrugId', this.state.drug.get('id'));
 
-        RequestPromise(PosologyRequests(this.props.patientID).upsert(requestSavePosology)).then((posology) => {
-            this.props.onUpdate(posology); this.exit();
+        RequestPromise(DrugBoxRequests(this.props.patientID).upsert(requestSaveDrugBox)).then((drugBox) => {
+            this.props.onUpdate(drugBox); this.exit();
         });
     },
 
@@ -110,8 +106,8 @@ export const PosologyForm = React.createClass({
     },
 
     finishDelete() {
-        RequestPromise(PosologyRequests(this.props.patientID).delete(this.getPosology().get('id'))).then(() => {
-            this.props.onDelete(this.getPosology()); this.exit();
+        RequestPromise(DrugBoxRequests(this.props.patientID).delete(this.getDrugBox().get('id'))).then(() => {
+            this.props.onDelete(this.getDrugBox()); this.exit();
         });
     },
 
@@ -129,9 +125,9 @@ export const PosologyForm = React.createClass({
 
     propertyChanged(id, key) {
         return (event) => {
-            let posology = this.getPosology();
+            let drugBox = this.getDrugBox();
 
-            let properties = posology.get('properties');
+            let properties = drugBox.get('properties');
             let newProperties = properties.update(
                 properties.findIndex((property) => {
                     return property.get('id') === id;
@@ -139,79 +135,66 @@ export const PosologyForm = React.createClass({
                 (item) => { return item.set(key, event.currentTarget.value); }
             );
 
-            let newState = posology.set('properties', newProperties);
+            let newState = drugBox.set('properties', newProperties);
 
-            this.updatePosology(newState);
+            this.updateDrugBox(newState);
         };
     },
 
     namedValueChanged(key) {
         return (event) => {
-            this.updatePosology( this.getPosology().set(key, event.currentTarget.value) );
-        };
-    },
-
-    booleanValueChanged(key, position) {
-        return (event) => {
-            let newKeyValue = this.getPosology().get(key).set(position, (event.currentTarget.value === 'on'));
-            let newPosology = this.getPosology().set(key, newKeyValue);
-
-            this.updatePosology( newPosology );
+            this.updateDrugBox( this.getDrugBox().set(key, event.currentTarget.value) );
         };
     },
 
     render() {
         let deleteButton;
-        let posology = this.getPosology();
+        let drugBox = this.getDrugBox();
 
-        if (posology.get('id')) {
-            deleteButton = <Button bsStyle="danger" onClick={this.delete}>Delete posology</Button>;
+        if (drugBox.get('id')) {
+            deleteButton = <Button bsStyle="danger" onClick={this.delete}>Delete Box</Button>;
         }
 
         let drug = this.state.drug;
         let drugText = drug ? `${drug.get('name')} (${drug.get('dose')} ${drug.get('unit')})` : 'Not selected';
+
+        console.log('Check', drugBox.toJSON());
 
         return <div>
             <div ref="placeholder"></div>
             <div ref="drugSelector"></div>
             <Modal bsSize="large" show={this.state.selfShow} onHide={this.cancel} onExited={this.onExited}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Create posology</Modal.Title>
+                    <Modal.Title>Create Box</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <Form horizontal>
                         <FormGroup>
                             <Col componentClass={ControlLabel} sm={2}>
-                                Start date
+                                Brand
                             </Col>
                             <Col sm={3}>
-                                <FormControl type="date" placeholder="Start date" value={posology.get('startDate')} onChange={this.namedValueChanged('startDate')} />
+                                <FormControl type="text" placeholder="Brand" value={drugBox.get('brand')} onChange={this.namedValueChanged('brand')} />
                             </Col>
                             <Col componentClass={ControlLabel} sm={2}>
-                                Discontinue at
+                                Production #
                             </Col>
                             <Col sm={3}>
-                                <FormControl type="date" placeholder="Discontinue at" value={posology.get('discontinueAt')} onChange={this.namedValueChanged('discontinueAt')} />
+                                <FormControl type="text" placeholder="Production Number" value={drugBox.get('productionNumber')} onChange={this.namedValueChanged('productionNumber')} />
                             </Col>
                         </FormGroup>
                         <FormGroup>
                             <Col componentClass={ControlLabel} sm={2}>
-                                Intake times
+                                Expires at
                             </Col>
                             <Col sm={3}>
-                                <Checkbox checked={this.getPosology().get('intakeTimes').get(0)} onChange={this.booleanValueChanged('intakeTimes', 0)}>Breakfast</Checkbox>
-                                <Checkbox checked={this.getPosology().get('intakeTimes').get(1)} onChange={this.booleanValueChanged('intakeTimes', 1)}>Lunch</Checkbox>
-                                <Checkbox checked={this.getPosology().get('intakeTimes').get(2)} onChange={this.booleanValueChanged('intakeTimes', 2)}>Afternoon</Checkbox>
-                                <Checkbox checked={this.getPosology().get('intakeTimes').get(3)} onChange={this.booleanValueChanged('intakeTimes', 3)}>Diner</Checkbox>
+                                <FormControl type="date" placeholder="Expires at" value={drugBox.get('expiresAt') || undefined} onChange={this.namedValueChanged('expiresAt')} />
                             </Col>
                             <Col componentClass={ControlLabel} sm={2}>
-                                Intake quantity
+                                Opened at
                             </Col>
                             <Col sm={3}>
-                                <FormControl type="number" step="0.1" placeholder="Intake quantity" value={posology.get('intakeQuantity')} onChange={this.namedValueChanged('intakeQuantity')} />
-                            </Col>
-                            <Col sm={1}>
-                                <Button onClick={this.addProperty}>Add property</Button>
+                                <FormControl type="date" placeholder="Opened at" value={drugBox.get('openedAt') || undefined} onChange={this.namedValueChanged('openedAt')} />
                             </Col>
                         </FormGroup>
                         <FormGroup>
@@ -222,13 +205,16 @@ export const PosologyForm = React.createClass({
                                 <Button onClick={this.selectDrug}>{drugText}</Button>
                             </Col>
                             <Col componentClass={ControlLabel} sm={2}>
-                                Notes
+                                Unit count
                             </Col>
-                            <Col sm={5}>
-                                <FormControl componentClass="textarea" placeholder="Notes" value={posology.get('notes')} onChange={this.namedValueChanged('notes')} />
+                            <Col sm={3}>
+                                <FormControl type="number" placeholder="Unit count" value={drugBox.get('unitCount')} onChange={this.namedValueChanged('unitCount')} />
+                            </Col>
+                            <Col sm={1}>
+                                <Button onClick={this.addProperty}>Add property</Button>
                             </Col>
                         </FormGroup>
-                        {posology.get('properties').map((obj) => {
+                        {drugBox.get('properties').map((obj) => {
                             return <FormGroup key={obj.get('id')}>
                                 <Col componentClass={ControlLabel} sm={2}>
                                     Key
@@ -251,7 +237,7 @@ export const PosologyForm = React.createClass({
                     </Form>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button bsStyle="primary" onClick={this.save}>Save posology</Button>
+                    <Button bsStyle="primary" onClick={this.save}>Save Box</Button>
                     {deleteButton}
                     <Button onClick={this.cancel}>Cancel</Button>
                 </Modal.Footer>
