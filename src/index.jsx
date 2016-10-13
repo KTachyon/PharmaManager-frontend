@@ -11,7 +11,7 @@ import initialState from './initialState';
 
 import { AppView } from './components/AppView';
 import { PatientsViewContainer } from './components/patient/PatientsView';
-import { PatientViewContainer } from './components/patient/PatientView';
+import { PatientView } from './components/patient/PatientView';
 import { DrugsViewContainer } from './components/drug/DrugsView';
 import { DrugViewContainer } from './components/drug/DrugView';
 import { PatientForm } from './components/patient/PatientForm';
@@ -28,7 +28,7 @@ const routes = <Route path="/" component={App}>
     <IndexRoute component={AppView} />
     <Route path="patients">
         <IndexRoute component={PatientsViewContainer} />
-        <Route path=":patient_id" component={PatientViewContainer} />
+        <Route path=":patient_id" component={PatientView} />
     </Route>
     <Route path="drugs">
         <IndexRoute component={DrugsViewContainer} />

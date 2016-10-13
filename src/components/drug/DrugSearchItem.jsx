@@ -10,8 +10,6 @@ export default React.createClass({
     },
 
     select() {
-        console.log(this.props);
-
         return this.props.onSelect(this.getDrug());
     },
 
