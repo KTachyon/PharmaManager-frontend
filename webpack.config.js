@@ -1,4 +1,5 @@
 var webpack = require('webpack');
+var ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 var config = {
     entry: [
@@ -7,11 +8,17 @@ var config = {
         './src/index.jsx'
     ],
     module: {
-        loaders: [{
-            test: /\.jsx?$/,
-            exclude: /node_modules/,
-            loaders: ['babel-loader']
-        }]
+        loaders: [
+            {
+                test: /\.jsx?$/,
+                exclude: /node_modules/,
+                loaders: ['babel-loader']
+            },
+            {
+                test: /\.css$/,
+                loader: ExtractTextPlugin.extract('style-loader', 'css-loader?modules&importLoaders=1&localIdentName=[local]')
+            }
+        ]
     },
     resolve: {
         extensions: ['', '.js', '.jsx']
@@ -26,7 +33,8 @@ var config = {
         hot: true
     },
     plugins: [
-        new webpack.HotModuleReplacementPlugin()
+        new webpack.HotModuleReplacementPlugin(),
+        new ExtractTextPlugin('style.css', { allChunks: true })
     ]
 };
 

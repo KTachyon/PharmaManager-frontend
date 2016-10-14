@@ -7,12 +7,8 @@ import { Panel, Col } from 'react-bootstrap';
 export const DrugStockView = React.createClass({
     mixins : [PureRenderMixin],
 
-    getInitialState() {
-        return { drugStocks : this.props.drugStocks };
-    },
-
     getDrugStocks() {
-        return this.state.drugStocks;
+        return this.props.drugStocks;
     },
 
     render: function() {

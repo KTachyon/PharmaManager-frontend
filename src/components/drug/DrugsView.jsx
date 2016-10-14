@@ -1,10 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import PureRenderMixin from 'react-addons-pure-render-mixin';
-import {connect} from 'react-redux';
 import DrugsList from './DrugsList';
 import SearchBar from '../SearchBar';
-import * as actions from '../../actions/remoteActions';
 import RequestPromise from '../../utils/RequestPromise';
 import { DrugRequests } from '../../RequestBuilder';
 import { fromJS } from 'immutable';
@@ -129,11 +127,3 @@ export const DrugsView = React.createClass({
         </Panel>;
     }
 });
-
-function mapStateToProps(state) {
-    return {
-        drugs: state.get('drugs')
-    };
-}
-
-export const DrugsViewContainer = connect(mapStateToProps, actions)(DrugsView);

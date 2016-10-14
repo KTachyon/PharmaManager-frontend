@@ -4,7 +4,6 @@ import PureRenderMixin from 'react-addons-pure-render-mixin';
 import PosologyList from './PosologyList';
 import RequestPromise from '../../utils/RequestPromise';
 import { PosologyRequests } from '../../RequestBuilder';
-import { fromJS } from 'immutable';
 import { PosologyForm } from './PosologyForm';
 
 import DestructiveOpConfirmation from '../dialog/DestructiveOpConfirmation';
@@ -14,12 +13,8 @@ import { Panel, Col, Button } from 'react-bootstrap';
 export const PosologyView = React.createClass({
     mixins : [PureRenderMixin],
 
-    getInitialState() {
-        return { posologies : this.props.posologies };
-    },
-
     getPosologies() {
-        return this.state.posologies;
+        return this.props.posologies;
     },
 
     createPosology() {
@@ -35,23 +30,8 @@ export const PosologyView = React.createClass({
         );
     },
 
-    onPosologyUpdate(posology) {
-        posology = fromJS(posology);
-
-        let existingPosology = this.getPosologies().find((object) => {
-            return object.get('id') === posology.get('id');
-        });
-
-        if (existingPosology) {
-            let newPosologies = this.getPosologies().update(
-                this.getPosologies().findIndex((item) => { return item.get('id') === posology.get('id'); }),
-                () => { return posology; }
-            );
-
-            this.setState({ posologies : newPosologies });
-        } else {
-            this.setState({ posologies : this.getPosologies().push(posology) });
-        }
+    onPosologyUpdate() {
+        this.props.onServerUpdate();
     },
 
     deletePosology(posology) {
@@ -73,9 +53,7 @@ export const PosologyView = React.createClass({
     },
 
     onPosologyDelete(posology) {
-        RequestPromise(PosologyRequests( this.props.patientID ).delete(posology.get('id'))).then(() => {
-            this.setState({ posologies : this.getPosologies().filter(p => p.get('id') !== posology.get('id')) });
-        });
+        RequestPromise(PosologyRequests( this.props.patientID ).delete(posology.get('id'))).then(this.props.onServerUpdate);
     },
 
     updatePosology(posology) {

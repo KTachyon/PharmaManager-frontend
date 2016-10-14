@@ -9,6 +9,8 @@ import { DrugBoxView } from '../boxes/DrugBoxView';
 import { DrugStockView } from '../stock/DrugStockView';
 import { Panel } from 'react-bootstrap';
 
+import FullPageLoader from '../loader/FullPageLoader';
+
 export const PatientView = React.createClass({
     mixins : [PureRenderMixin],
 
@@ -25,7 +27,11 @@ export const PatientView = React.createClass({
     },
 
     componentDidMount() {
-        RequestPromise(PatientRequests().get( this.getPatientID() )).then((body) => {
+        this.onUpdateAny();
+    },
+
+    onUpdateAny() {
+        return RequestPromise(PatientRequests().get( this.getPatientID() )).then((body) => {
             this.setState({ patient : fromJS(body) });
         });
     },
@@ -34,7 +40,7 @@ export const PatientView = React.createClass({
         let patient = this.getPatient();
 
         if (!patient) {
-            return <div>Loading...</div>;
+            return <FullPageLoader />;
         }
 
         return <Panel>
@@ -43,13 +49,13 @@ export const PatientView = React.createClass({
             <p>{`SNS: ${patient.get('sns')}`}</p>
             <hr />
             <h2>Posology</h2>
-            <PosologyView patientID={this.getPatientID()} posologies={patient.get('Posologies')} />
-            <hr />
-            <h2>Boxes</h2>
-            <DrugBoxView patientID={this.getPatientID()} drugBoxes={patient.get('DrugBoxes')} />
+            <PosologyView patientID={this.getPatientID()} onServerUpdate={this.onUpdateAny} posologies={patient.get('Posologies')} />
             <hr />
             <h2>Stock</h2>
-            <DrugStockView patientID={this.getPatientID()} drugStocks={patient.get('DrugStocks')} />
+            <DrugStockView patientID={this.getPatientID()} onServerUpdate={this.onUpdateAny} drugStocks={patient.get('DrugStocks')} />
+            <hr />
+            <h2>Boxes</h2>
+            <DrugBoxView patientID={this.getPatientID()} onServerUpdate={this.onUpdateAny} drugBoxes={patient.get('DrugBoxes')} />
         </Panel>;
     }
 });

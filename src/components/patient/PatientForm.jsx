@@ -2,8 +2,6 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import PureRenderMixin from 'react-addons-pure-render-mixin';
 import { fromJS } from 'immutable';
-import { connect } from 'react-redux';
-import * as actions from '../../actions/remoteActions';
 import { generateUUID } from '../../utils/Generator';
 import { PatientRequests } from '../../RequestBuilder';
 import RequestPromise from '../../utils/RequestPromise';
@@ -201,12 +199,3 @@ export const PatientForm = React.createClass({
     }
 
 });
-
-
-function mapStateToProps(state) {
-    return {
-        patient: state.get('patient')
-    };
-}
-
-export const PatientFormContainer = connect(mapStateToProps, actions)(PatientForm);

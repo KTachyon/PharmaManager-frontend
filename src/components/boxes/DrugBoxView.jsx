@@ -4,7 +4,6 @@ import PureRenderMixin from 'react-addons-pure-render-mixin';
 import DrugBoxList from './DrugBoxList';
 import RequestPromise from '../../utils/RequestPromise';
 import { DrugBoxRequests } from '../../RequestBuilder';
-import { fromJS } from 'immutable';
 import { DrugBoxForm } from './DrugBoxForm';
 
 import DestructiveOpConfirmation from '../dialog/DestructiveOpConfirmation';
@@ -14,12 +13,8 @@ import { Panel, Col, Button } from 'react-bootstrap';
 export const DrugBoxView = React.createClass({
     mixins : [PureRenderMixin],
 
-    getInitialState() {
-        return { drugBoxes : this.props.drugBoxes };
-    },
-
     getDrugBoxes() {
-        return this.state.drugBoxes;
+        return this.props.drugBoxes;
     },
 
     createDrugBox() {
@@ -35,23 +30,8 @@ export const DrugBoxView = React.createClass({
         );
     },
 
-    onDrugBoxUpdate(drugBox) {
-        drugBox = fromJS(drugBox);
-
-        let existingDrugBox = this.getDrugBoxes().find((object) => {
-            return object.get('id') === drugBox.get('id');
-        });
-
-        if (existingDrugBox) {
-            let newDrugBoxes = this.getDrugBoxes().update(
-                this.getDrugBoxes().findIndex((item) => { return item.get('id') === drugBox.get('id'); }),
-                () => { return drugBox; }
-            );
-
-            this.setState({ drugBoxes : newDrugBoxes });
-        } else {
-            this.setState({ drugBoxes : this.getDrugBoxes().push(drugBox) });
-        }
+    onDrugBoxUpdate() {
+        this.props.onServerUpdate();
     },
 
     deleteDrugBox(drugBox) {
@@ -74,7 +54,7 @@ export const DrugBoxView = React.createClass({
 
     onDrugBoxDelete(drugBox) {
         RequestPromise(DrugBoxRequests( this.props.patientID ).delete(drugBox.get('id'))).then(() => {
-            this.setState({ drugBoxes : this.getDrugBoxes().filter(p => p.get('id') !== drugBox.get('id')) });
+            this.props.onServerUpdate();
         });
     },
 

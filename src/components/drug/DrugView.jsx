@@ -1,7 +1,5 @@
 import React from 'react';
 import PureRenderMixin from 'react-addons-pure-render-mixin';
-import {connect} from 'react-redux';
-import * as actions from '../../actions/remoteActions';
 
 export const DrugView = React.createClass({
     mixins : [PureRenderMixin],
@@ -17,11 +15,3 @@ export const DrugView = React.createClass({
         </div>;
     }
 });
-
-function mapStateToProps(state) {
-    return {
-        drugs: state.get('drugs')
-    };
-}
-
-export const DrugViewContainer = connect(mapStateToProps, actions)(DrugView);
