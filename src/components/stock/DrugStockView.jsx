@@ -1,9 +1,6 @@
 import React from 'react';
 import PureRenderMixin from 'react-addons-pure-render-mixin';
 import DrugStockList from './DrugStockList';
-import RequestPromise from '../../utils/RequestPromise';
-import { DrugStockRequests } from '../../RequestBuilder';
-import { fromJS } from 'immutable';
 
 import { Panel, Col } from 'react-bootstrap';
 
@@ -11,13 +8,7 @@ export const DrugStockView = React.createClass({
     mixins : [PureRenderMixin],
 
     getInitialState() {
-        return { drugStocks : fromJS([]) };
-    },
-
-    componentDidMount() {
-        RequestPromise(DrugStockRequests( this.props.patientID ).getAll()).then((body) => {
-            this.setState({ drugStocks : fromJS(body) });
-        });
+        return { drugStocks : this.props.drugStocks };
     },
 
     getDrugStocks() {

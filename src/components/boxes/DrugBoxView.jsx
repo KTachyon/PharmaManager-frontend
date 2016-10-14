@@ -15,13 +15,7 @@ export const DrugBoxView = React.createClass({
     mixins : [PureRenderMixin],
 
     getInitialState() {
-        return { drugBoxes : fromJS([]) };
-    },
-
-    componentDidMount() {
-        RequestPromise(DrugBoxRequests( this.props.patientID ).getAll()).then((body) => {
-            this.setState({ drugBoxes : fromJS(body) });
-        });
+        return { drugBoxes : this.props.drugBoxes };
     },
 
     getDrugBoxes() {

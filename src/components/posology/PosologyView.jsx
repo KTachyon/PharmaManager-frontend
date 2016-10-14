@@ -15,13 +15,7 @@ export const PosologyView = React.createClass({
     mixins : [PureRenderMixin],
 
     getInitialState() {
-        return { posologies : fromJS([]) };
-    },
-
-    componentDidMount() {
-        RequestPromise(PosologyRequests( this.props.patientID ).getAll()).then((body) => {
-            this.setState({ posologies : fromJS(body) });
-        });
+        return { posologies : this.props.posologies };
     },
 
     getPosologies() {
@@ -93,7 +87,7 @@ export const PosologyView = React.createClass({
         ReactDOM.render(
             <PosologyForm
                 close={closeModal}
-                patientID={this.props.patientID} 
+                patientID={this.props.patientID}
                 posology={posology}
                 onUpdate={this.onPosologyUpdate}
                 onDelete={this.onPosologyDelete}

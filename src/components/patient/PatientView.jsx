@@ -43,13 +43,13 @@ export const PatientView = React.createClass({
             <p>{`SNS: ${patient.get('sns')}`}</p>
             <hr />
             <h2>Posology</h2>
-            <PosologyView patientID={this.getPatientID()} />
+            <PosologyView patientID={this.getPatientID()} posologies={patient.get('Posologies')} />
             <hr />
             <h2>Boxes</h2>
-            <DrugBoxView patientID={this.getPatientID()} />
+            <DrugBoxView patientID={this.getPatientID()} drugBoxes={patient.get('DrugBoxes')} />
             <hr />
             <h2>Stock</h2>
-            <DrugStockView patientID={this.getPatientID()} />
+            <DrugStockView patientID={this.getPatientID()} drugStocks={patient.get('DrugStocks')} />
         </Panel>;
     }
 });
