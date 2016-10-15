@@ -9,10 +9,10 @@ import App from './components/App';
 //import initialState from './initialState';
 
 import { AppView } from './components/AppView';
-import { PatientsViewContainer } from './components/patient/PatientsView';
+import { PatientsView } from './components/patient/PatientsView';
 import { PatientView } from './components/patient/PatientView';
-import { DrugsViewContainer } from './components/drug/DrugsView';
-import { DrugViewContainer } from './components/drug/DrugView';
+import { DrugsView } from './components/drug/DrugsView';
+import { DrugView } from './components/drug/DrugView';
 
 //const createStoreWithMiddleware = applyMiddleware(remoteMidleware)(createStore);
 //const store = createStoreWithMiddleware(reducer);
@@ -23,12 +23,12 @@ const store = createStore(reducer);
 const routes = <Route path="/" component={App}>
     <IndexRoute component={AppView} />
     <Route path="patients">
-        <IndexRoute component={PatientsViewContainer} />
+        <IndexRoute component={PatientsView} />
         <Route path=":patient_id" component={PatientView} />
     </Route>
     <Route path="drugs">
-        <IndexRoute component={DrugsViewContainer} />
-        <Route path=":drug_id" component={DrugViewContainer} />
+        <IndexRoute component={DrugsView} />
+        <Route path=":drug_id" component={DrugView} />
     </Route>
 </Route>;
 

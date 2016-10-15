@@ -158,8 +158,6 @@ export const DrugBoxForm = React.createClass({
         let drug = this.state.drug;
         let drugText = drug ? `${drug.get('name')} (${drug.get('dose')} ${drug.get('unit')})` : 'Not selected';
 
-        console.log('Check', drugBox.toJSON());
-
         return <div>
             <div ref="placeholder"></div>
             <div ref="drugSelector"></div>

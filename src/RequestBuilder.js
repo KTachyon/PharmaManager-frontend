@@ -84,5 +84,15 @@ export let DrugBoxRequests = (patientID) => {
 };
 
 export let DrugStockRequests = (patientID) => {
-    return baseNestedCRUD('drugStock', 'patients', patientID);
+    let RequestBuilderObject = {
+        getAll : () => {
+            return {
+                method : 'GET',
+                url : baseURL + 'patients/' + patientID + '/drugStock',
+                json : true
+            };
+        }
+    };
+
+    return RequestBuilderObject;
 };

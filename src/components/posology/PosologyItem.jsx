@@ -43,10 +43,14 @@ export default React.createClass({
 
         descriptor = descriptor + '[ ' + times + ' ]';
 
+        let finalDescriptor = posology.get('cancelled') ?
+            <p style="color:red">{descriptor + '(CANCELLED)'}</p> :
+            <p>{descriptor}</p>;
+
         return <div>
             <div id="modalPlaceholder"></div>
             <ListGroupItem>
-                {descriptor}
+                {finalDescriptor}
                 <ButtonToolbar>
                     <Button onClick={this.update}>Update</Button>
                     <Button bsStyle="danger" onClick={this.delete}>Delete</Button>
