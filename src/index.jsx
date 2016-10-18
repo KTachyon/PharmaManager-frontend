@@ -13,6 +13,7 @@ import { PatientsView } from './components/patient/PatientsView';
 import { PatientView } from './components/patient/PatientView';
 import { DrugsView } from './components/drug/DrugsView';
 import { DrugView } from './components/drug/DrugView';
+import { StockReportView } from './components/stock/StockReportView';
 
 //const createStoreWithMiddleware = applyMiddleware(remoteMidleware)(createStore);
 //const store = createStoreWithMiddleware(reducer);
@@ -29,6 +30,9 @@ const routes = <Route path="/" component={App}>
     <Route path="drugs">
         <IndexRoute component={DrugsView} />
         <Route path=":drug_id" component={DrugView} />
+    </Route>
+    <Route path="report">
+        <IndexRoute component={StockReportView} />
     </Route>
 </Route>;
 
