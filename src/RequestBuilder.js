@@ -91,6 +91,14 @@ export let DrugStockRequests = (patientID) => {
                 url : baseURL + 'patients/' + patientID + '/drugStock',
                 json : true
             };
+        },
+
+        getReport : () => {
+            return {
+                method : 'GET',
+                url : baseURL + 'stock/report',
+                json : true
+            };
         }
     };
 
