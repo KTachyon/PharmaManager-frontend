@@ -9,6 +9,7 @@ export const AppView = React.createClass({
         return <div>
             <p><Link to={'patients'}>Patients</Link></p>
             <p><Link to={'drugs'}>Drugs</Link></p>
+            <p><Link to={'report'}>Stock Report</Link></p>
         </div>;
     }
 });
