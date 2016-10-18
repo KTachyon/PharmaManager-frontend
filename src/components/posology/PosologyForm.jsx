@@ -7,9 +7,14 @@ import { PosologyRequests } from '../../RequestBuilder';
 import RequestPromise from '../../utils/RequestPromise';
 import DrugSearchForm from '../drug/DrugSearchForm';
 
+import moment from 'moment';
+import _ from 'lodash';
+
 import DestructiveOpConfirmation from '../dialog/DestructiveOpConfirmation';
 
-import { Button, FormGroup, FormControl, Form, ControlLabel, Col, Modal, Checkbox } from 'react-bootstrap';
+import intakeStyle from '../../style/intake.css';
+
+import { Button, FormGroup, FormControl, Form, ControlLabel, Col, Modal, Radio } from 'react-bootstrap';
 
 export const PosologyForm = React.createClass({
     mixins : [PureRenderMixin],
@@ -21,8 +26,12 @@ export const PosologyForm = React.createClass({
             posology = posology.set('properties', []);
         }
 
-        if (!posology.get('intakeTimes')) {
-            posology = posology.set('intakeTimes', fromJS([false, false, false, false]));
+        if (!posology.get('intake')) {
+            posology = posology.set('intake', fromJS([]));
+        }
+
+        if (!posology.get('scheduleType')) {
+            posology = posology.set('scheduleType', 'DAILY');
         }
 
         return {
@@ -151,13 +160,148 @@ export const PosologyForm = React.createClass({
         };
     },
 
-    booleanValueChanged(key, position) {
+    getDateValue(key) {
+        return this.getPosology().get(key) ? moment( this.getPosology().get(key) ).format('YYYY-MM-DD') : undefined;
+    },
+
+    dateValueChanged(key) {
         return (event) => {
-            let newKeyValue = this.getPosology().get(key).set(position, (event.currentTarget.value === 'on'));
-            let newPosology = this.getPosology().set(key, newKeyValue);
+            this.updatePosology( this.getPosology().set(key, moment(event.currentTarget.value).toDate()) );
+        };
+    },
+
+    gridValueChanged(key, position) {
+        return (event) => {
+            let value = this.getPosology().get(key).set(position, parseFloat(event.currentTarget.value));
+            let newPosology = this.getPosology().set(key, value);
 
             this.updatePosology( newPosology );
         };
+    },
+
+    getGridValueFor(key, position) {
+        return this.getPosology().get(key).get(position);
+    },
+
+    scheduleTypeChanged() {
+        return (event) => {
+            let newPosology = this.getPosology().set('scheduleType', event.currentTarget.value).set('intake', fromJS([]));
+
+            this.updatePosology( newPosology );
+        };
+    },
+
+    buildMonthlyIntakeGrid() {
+        let colorClass = this.getGridValueFor('intake', 0) ? intakeStyle.fill : intakeStyle.zero;
+        let cssClasses = `${colorClass} ${intakeStyle.intakeRow}`;
+
+        return <FormGroup>
+            <Col componentClass={ControlLabel} sm={2}>Intake</Col>
+            <Col sm={2}>
+                <FormControl
+                    type="number"
+                    step="0.5"
+                    value={this.getGridValueFor('intake', 0)}
+                    onChange={this.gridValueChanged('intake', 0)}
+                    className={cssClasses}
+                />
+            </Col>
+        </FormGroup>;
+    },
+
+    buildDailyIntakeGrid() {
+        let intakeComponent = [];
+
+        for (let idx = 0; idx < 4; idx++) {
+            let colorClass = this.getGridValueFor('intake', idx) ? intakeStyle.fill : intakeStyle.zero;
+            let cssClasses = `${colorClass} ${intakeStyle.intakeRow}`;
+
+            intakeComponent.push(
+                <FormControl
+                    key={`intakeGrid${idx}`}
+                    type="number"
+                    step="0.5"
+                    value={this.getGridValueFor('intake', idx)}
+                    onChange={this.gridValueChanged('intake', idx)}
+                    className={cssClasses}
+                />
+            );
+        }
+
+        return <FormGroup>
+            <Col componentClass={ControlLabel} sm={2}>Intake</Col>
+            <Col sm={1}>
+                <p className={`${intakeStyle.intakeLabel} ${intakeStyle.intakeRow}`}>Breakfast</p>
+                <p className={`${intakeStyle.intakeLabel} ${intakeStyle.intakeRow}`}>Lunch</p>
+                <p className={`${intakeStyle.intakeLabel} ${intakeStyle.intakeRow}`}>Afternoon</p>
+                <p className={`${intakeStyle.intakeLabel} ${intakeStyle.intakeRow}`}>Diner</p>
+            </Col>
+            <Col sm={2}>{intakeComponent}</Col>
+        </FormGroup>;
+    },
+
+    buildWeeklyIntakeGrid() {
+        let startMoment = moment(this.getPosology().get('startDate'));
+
+        let days = [ ];
+
+        for (let i = 0; i < 7; i++) {
+            days.push(moment(startMoment).add(i, 'days'));
+        }
+
+        let weekDays = _.map(days, (day) => {
+            return day.format('ddd');
+        });
+
+        let intakeComponent = _.map(weekDays, (day, position) => {
+            return <p className={`${intakeStyle.intakeCell} ${intakeStyle.intakeHeader}`} key={`intakeHead${position}`}>{day}</p>;
+        });
+
+        let weekParts = 7 * 4;
+        let startPart = startMoment.day() * 4;
+
+        for (let idx = 0; idx < weekParts; idx++) {
+            let currentPart = (idx + startPart) % weekParts;
+
+            let colorClass = this.getGridValueFor('intake', currentPart) ? intakeStyle.fill : intakeStyle.zero;
+            let cssClasses = `${colorClass} ${intakeStyle.intakeRow} ${intakeStyle.intakeCell} ${intakeStyle.flat}`;
+
+            intakeComponent.push(
+                <input
+                    key={`intakeGrid${idx}`}
+                    type="number"
+                    step="0.5"
+                    value={this.getGridValueFor('intake', currentPart)}
+                    onChange={this.gridValueChanged('intake', currentPart)}
+                    className={cssClasses}
+                />
+            );
+        }
+
+        return <FormGroup>
+            <Col componentClass={ControlLabel} sm={2}>Intake</Col>
+            <Col sm={1}>
+                <p className={intakeStyle.intakeCorner}>&nbsp;</p>
+                <p className={`${intakeStyle.intakeLabel} ${intakeStyle.intakeRow}`}>Breakfast</p>
+                <p className={`${intakeStyle.intakeLabel} ${intakeStyle.intakeRow}`}>Lunch</p>
+                <p className={`${intakeStyle.intakeLabel} ${intakeStyle.intakeRow}`}>Afternoon</p>
+                <p className={`${intakeStyle.intakeLabel} ${intakeStyle.intakeRow}`}>Diner</p>
+            </Col>
+            <Col sm={7}>{intakeComponent}</Col>
+        </FormGroup>;
+    },
+
+    buildIntakeGrid() {
+        switch (this.getPosology().get('scheduleType')) {
+            case 'DAILY' :
+                return this.buildDailyIntakeGrid();
+            case 'WEEKLY' :
+                return this.buildWeeklyIntakeGrid();
+            case 'MONTHLY' :
+                return this.buildMonthlyIntakeGrid();
+            default :
+                throw new Error('Bad scheduleType');
+        }
     },
 
     render() {
@@ -185,33 +329,13 @@ export const PosologyForm = React.createClass({
                                 Start date
                             </Col>
                             <Col sm={3}>
-                                <FormControl type="date" placeholder="Start date" value={posology.get('startDate')} onChange={this.namedValueChanged('startDate')} />
+                                <FormControl type="date" placeholder="Start date" value={this.getDateValue('startDate')} onChange={this.dateValueChanged('startDate')} />
                             </Col>
                             <Col componentClass={ControlLabel} sm={2}>
                                 Discontinue at
                             </Col>
                             <Col sm={3}>
-                                <FormControl type="date" placeholder="Discontinue at" value={posology.get('discontinueAt')} onChange={this.namedValueChanged('discontinueAt')} />
-                            </Col>
-                        </FormGroup>
-                        <FormGroup>
-                            <Col componentClass={ControlLabel} sm={2}>
-                                Intake times
-                            </Col>
-                            <Col sm={3}>
-                                <Checkbox checked={this.getPosology().get('intakeTimes').get(0)} onChange={this.booleanValueChanged('intakeTimes', 0)}>Breakfast</Checkbox>
-                                <Checkbox checked={this.getPosology().get('intakeTimes').get(1)} onChange={this.booleanValueChanged('intakeTimes', 1)}>Lunch</Checkbox>
-                                <Checkbox checked={this.getPosology().get('intakeTimes').get(2)} onChange={this.booleanValueChanged('intakeTimes', 2)}>Afternoon</Checkbox>
-                                <Checkbox checked={this.getPosology().get('intakeTimes').get(3)} onChange={this.booleanValueChanged('intakeTimes', 3)}>Diner</Checkbox>
-                            </Col>
-                            <Col componentClass={ControlLabel} sm={2}>
-                                Intake quantity
-                            </Col>
-                            <Col sm={3}>
-                                <FormControl type="number" step="0.1" placeholder="Intake quantity" value={posology.get('intakeQuantity')} onChange={this.namedValueChanged('intakeQuantity')} />
-                            </Col>
-                            <Col sm={1}>
-                                <Button onClick={this.addProperty}>Add property</Button>
+                                <FormControl type="date" placeholder="Discontinue at" value={this.getDateValue('discontinueAt')} onChange={this.dateValueChanged('discontinueAt')} />
                             </Col>
                         </FormGroup>
                         <FormGroup>
@@ -222,10 +346,24 @@ export const PosologyForm = React.createClass({
                                 <Button onClick={this.selectDrug}>{drugText}</Button>
                             </Col>
                             <Col componentClass={ControlLabel} sm={2}>
+                                Schedule Type
+                            </Col>
+                            <Col sm={3}>
+                                <Radio name="scheduleType" value="DAILY" checked={posology.get('scheduleType') === 'DAILY'} onChange={this.scheduleTypeChanged()}>Daily</Radio>
+                                <Radio name="scheduleType" value="WEEKLY" checked={posology.get('scheduleType') === 'WEEKLY'} onChange={this.scheduleTypeChanged()}>Weekly</Radio>
+                                <Radio name="scheduleType" value="MONTHLY" checked={posology.get('scheduleType') === 'MONTHLY'} onChange={this.scheduleTypeChanged()}>Monthly</Radio>
+                            </Col>
+                        </FormGroup>
+                        {this.buildIntakeGrid()}
+                        <FormGroup>
+                            <Col componentClass={ControlLabel} sm={2}>
                                 Notes
                             </Col>
-                            <Col sm={5}>
+                            <Col sm={8}>
                                 <FormControl componentClass="textarea" placeholder="Notes" value={posology.get('notes')} onChange={this.namedValueChanged('notes')} />
+                            </Col>
+                            <Col sm={1}>
+                                <Button onClick={this.addProperty}>Add property</Button>
                             </Col>
                         </FormGroup>
                         {posology.get('properties').map((obj) => {

@@ -1,0 +1,55 @@
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    /* display: none; <- Crashes Chrome on hover */
+    -webkit-appearance: none;
+    margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
+}
+
+.zero {
+    background-color:#FF9494;
+}
+
+.fill {
+    background-color:#A8DBA8;
+}
+
+.flat {
+    border-width: 1px;
+    border-style: ridge;
+    text-align: center;
+}
+
+.intakeCell {
+    margin: 0;
+    text-align: center;
+    display: inline-block;
+}
+
+.intakeHeader {
+    font-weight: bold;
+}
+
+.intakeCell {
+    width : calc(100%/7);
+}
+
+.intakeCorner {
+    height: 20px;
+    display: inline-block;
+    margin: 0;
+}
+
+.intakeLabel {
+    font-weight: bold;
+}
+
+.intakeRow {
+    height: 30px;
+    display: inline-block;
+}
+
+p.intakeRow {
+    vertical-align: middle;
+    margin : 0;
+    line-height: 30px;
+}
