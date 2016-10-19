@@ -18,7 +18,7 @@ export default React.createClass({
 
         return <ListGroup>
             {this.getDrugStocks().map(drugStock =>
-                <DrugStockItem key={drugStock.get('id')} obj={drugStock} />
+                <DrugStockItem key={drugStock.get('id')} obj={drugStock} update={this.props.update} />
             )}
         </ListGroup>;
     }

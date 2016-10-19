@@ -99,7 +99,20 @@ export let DrugStockRequests = (patientID) => {
                 url : baseURL + 'stock/report',
                 json : true
             };
+        },
+
+        updateStock : (amount, DrugId) => {
+            return {
+                method : 'PUT',
+                url : baseURL + 'patients/' + patientID + '/drugStock/manualUpdate',
+                json : {
+                    DrugId,
+                    amount
+                }
+            };
         }
+
+
     };
 
     return RequestBuilderObject;
