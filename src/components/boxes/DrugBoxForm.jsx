@@ -6,6 +6,7 @@ import { generateUUID } from '../../utils/Generator';
 import { DrugBoxRequests } from '../../RequestBuilder';
 import RequestPromise from '../../utils/RequestPromise';
 import DrugSearchForm from '../drug/DrugSearchForm';
+import { toastr } from 'react-redux-toastr';
 
 import DestructiveOpConfirmation from '../dialog/DestructiveOpConfirmation';
 
@@ -70,6 +71,8 @@ export const DrugBoxForm = React.createClass({
 
         RequestPromise(DrugBoxRequests(this.props.patientID).upsert(requestSaveDrugBox)).then((drugBox) => {
             this.props.onUpdate(drugBox); this.exit();
+        }).catch((error) => {
+            toastr.error('Save failed: ' + error.message);
         });
     },
 
@@ -108,6 +111,8 @@ export const DrugBoxForm = React.createClass({
     finishDelete() {
         RequestPromise(DrugBoxRequests(this.props.patientID).delete(this.getDrugBox().get('id'))).then(() => {
             this.props.onDelete(this.getDrugBox()); this.exit();
+        }).catch((error) => {
+            toastr.error('Delete failed: ' + error.message);
         });
     },
 

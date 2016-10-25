@@ -2,11 +2,8 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Router, Route, IndexRoute, hashHistory } from 'react-router';
 import { Provider } from 'react-redux';
-import { createStore /*, applyMiddleware*/ } from 'redux';
-import reducer from './reducer';
+import { createStore, combineReducers } from 'redux';
 import App from './components/App';
-//import remoteMidleware from './middleware';
-//import initialState from './initialState';
 
 import { AppView } from './components/AppView';
 import { PatientsView } from './components/patient/PatientsView';
@@ -15,11 +12,15 @@ import { DrugsView } from './components/drug/DrugsView';
 import { DrugView } from './components/drug/DrugView';
 import { StockReportView } from './components/stock/StockReportView';
 
-//const createStoreWithMiddleware = applyMiddleware(remoteMidleware)(createStore);
-//const store = createStoreWithMiddleware(reducer);
+import ReduxToastr, { reducer as toastrReducer } from 'react-redux-toastr';
 
-const store = createStore(reducer);
-//store.dispatch( localActions.setState(initialState) );
+const reducers = {
+  // ... other reducers ...
+  toastr: toastrReducer // <- Mounted at toastr.
+};
+
+const appReducer = combineReducers(reducers);
+const store = createStore(appReducer);
 
 const routes = <Route path="/" component={App}>
     <IndexRoute component={AppView} />
@@ -38,7 +39,10 @@ const routes = <Route path="/" component={App}>
 
 ReactDOM.render(
     <Provider store={store}>
-        <Router history={hashHistory}>{routes}</Router>
+        <div>
+            <Router history={hashHistory}>{routes}</Router>
+            <ReduxToastr/>
+        </div>
     </Provider>,
     document.getElementById('app')
 );

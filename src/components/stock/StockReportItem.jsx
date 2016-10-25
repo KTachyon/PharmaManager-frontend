@@ -1,8 +1,8 @@
 import React from 'react';
 import PureRenderMixin from 'react-addons-pure-render-mixin';
 
-import { ListGroupItem } from 'react-bootstrap';
-import {Link} from 'react-router';
+import { ListGroupItem, Panel } from 'react-bootstrap';
+import { Link } from 'react-router';
 
 export default React.createClass({
     mixins : [PureRenderMixin],
@@ -14,13 +14,17 @@ export default React.createClass({
     render() {
         let reportItem = this.getStockReportItem();
         let patient = reportItem.get('Patient');
-        let drug = reportItem.get('Drug');
+        let stocks = reportItem.get('stocks');
 
         return <div>
             <ListGroupItem>
                 <p>Patient: <Link to={`patients/${patient.get('id')}`}>{patient.get('name')}</Link></p>
-                <p>Drug: <Link to={`patients/${drug.get('id')}`}>{drug.get('name')}</Link></p>
-                <p>Stock status: {reportItem.get('stock') + '/' + reportItem.get('required')}</p>
+                {stocks.map(stock => {
+                        return <Panel key={`${patient.get('id')}_${stock.get('Drug')}`}>
+                        <p>Drug: <Link to={`patients/${stock.get('Drug').get('id')}`}>{stock.get('Drug').get('name')}</Link></p>
+                        <p>Stock status: {stock.get('stock') + '/' + stock.get('required')}</p>
+                    </Panel>;
+                })}
             </ListGroupItem>
         </div>;
     }

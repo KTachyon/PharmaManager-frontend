@@ -67,6 +67,35 @@ var baseNestedCRUD = (identifier, parentIdentifier, parentID) => {
     return baseCRUD(parentIdentifier + '/' + parentID + '/' + identifier);
 };
 
+export let AuthRequests = () => {
+    let RequestBuilderObject = {
+        login : (email, password) => {
+            return {
+                method : 'POST',
+                url : baseURL + 'auth/login',
+                json : { email, password }
+            };
+        },
+
+        session: () => {
+            return {
+                method : 'GET',
+                url : baseURL + 'auth/session',
+                json : true
+            };
+        },
+
+        logout: () => {
+            return {
+                method : 'DELETE',
+                url : baseURL + 'auth/logout'
+            };
+        }
+    };
+
+    return RequestBuilderObject;
+};
+
 export let PatientRequests = () => {
     return baseCRUD('patients', true);
 };
@@ -110,8 +139,15 @@ export let DrugStockRequests = (patientID) => {
                     amount
                 }
             };
-        }
+        },
 
+        weeklyStockUpdate : () => {
+            return {
+                method : 'POST',
+                url : baseURL + 'stock/weekly',
+                json : {}
+            };
+        }
 
     };
 

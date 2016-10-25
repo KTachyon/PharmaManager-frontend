@@ -11,6 +11,7 @@ import moment from 'moment';
 import _ from 'lodash';
 
 import DestructiveOpConfirmation from '../dialog/DestructiveOpConfirmation';
+import { toastr } from 'react-redux-toastr';
 
 import intakeStyle from '../../style/intake.css';
 
@@ -83,6 +84,8 @@ export const PosologyForm = React.createClass({
 
         RequestPromise(PosologyRequests(this.props.patientID).upsert(requestSavePosology)).then((posology) => {
             this.props.onUpdate(posology); this.exit();
+        }).catch((error) => {
+            toastr.error('Save failed: ' + error.message);
         });
     },
 
@@ -121,6 +124,8 @@ export const PosologyForm = React.createClass({
     finishDelete() {
         RequestPromise(PosologyRequests(this.props.patientID).delete(this.getPosology().get('id'))).then(() => {
             this.props.onDelete(this.getPosology()); this.exit();
+        }).catch((error) => {
+            toastr.error('Delete failed: ' + error.message);
         });
     },
 
@@ -320,7 +325,7 @@ export const PosologyForm = React.createClass({
             <div ref="drugSelector"></div>
             <Modal bsSize="large" show={this.state.selfShow} onHide={this.cancel} onExited={this.onExited}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Create posology</Modal.Title>
+                    <Modal.Title>{posology.get('id') ? 'Update' : 'Create'} posology</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <Form horizontal>

@@ -2,6 +2,7 @@ import React from 'react';
 import PureRenderMixin from 'react-addons-pure-render-mixin';
 import { DrugStockRequests } from '../../RequestBuilder';
 import RequestPromise from '../../utils/RequestPromise';
+import { toastr } from 'react-redux-toastr';
 
 import { Button, FormGroup, FormControl, Form, ControlLabel, Col, Modal } from 'react-bootstrap';
 
@@ -32,6 +33,8 @@ export const DrugStockUpdateForm = React.createClass({
 
         RequestPromise(DrugStockRequests(this.props.patientID).updateStock(this.state.amount, drugId)).then(() => {
             this.props.onUpdate(); this.exit();
+        }).catch((error) => {
+            toastr.error('Save failed: ' + error.message);
         });
     },
 

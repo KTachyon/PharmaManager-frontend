@@ -5,6 +5,7 @@ import DrugBoxList from './DrugBoxList';
 import RequestPromise from '../../utils/RequestPromise';
 import { DrugBoxRequests } from '../../RequestBuilder';
 import { DrugBoxForm } from './DrugBoxForm';
+import { toastr } from 'react-redux-toastr';
 
 import DestructiveOpConfirmation from '../dialog/DestructiveOpConfirmation';
 
@@ -55,6 +56,8 @@ export const DrugBoxView = React.createClass({
     onDrugBoxDelete(drugBox) {
         RequestPromise(DrugBoxRequests( this.props.patientID ).delete(drugBox.get('id'))).then(() => {
             this.props.onServerUpdate();
+        }).catch((error) => {
+            toastr.error('Delete failed: ' + error.message);
         });
     },
 

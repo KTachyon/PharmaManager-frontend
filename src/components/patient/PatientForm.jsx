@@ -5,6 +5,7 @@ import { fromJS } from 'immutable';
 import { generateUUID } from '../../utils/Generator';
 import { PatientRequests } from '../../RequestBuilder';
 import RequestPromise from '../../utils/RequestPromise';
+import { toastr } from 'react-redux-toastr';
 
 import DestructiveOpConfirmation from '../dialog/DestructiveOpConfirmation';
 
@@ -62,6 +63,8 @@ export const PatientForm = React.createClass({
     save() {
         RequestPromise(PatientRequests().upsert(this.getPatient())).then((patient) => {
             this.props.onUpdate(patient); this.exit();
+        }).catch((error) => {
+            toastr.error('Save failed: ' + error.message);
         });
     },
 
@@ -86,6 +89,8 @@ export const PatientForm = React.createClass({
     finishDelete() {
         RequestPromise(PatientRequests().delete(this.getPatient().get('id'))).then(() => {
             this.props.onDelete(this.getPatient()); this.exit();
+        }).catch((error) => {
+            toastr.error('Delete failed: ' + error.message);
         });
     },
 

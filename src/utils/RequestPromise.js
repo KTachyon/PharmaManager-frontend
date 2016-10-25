@@ -2,6 +2,8 @@ import Promise from 'bluebird';
 import request from 'browser-request';
 
 export default (requestData) => {
+    requestData.withCredentials = true;
+
     return new Promise(function(fulfill, reject) {
         request(requestData, function(error, response, body) {
             if (error) {

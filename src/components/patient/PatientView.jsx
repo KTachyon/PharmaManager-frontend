@@ -3,6 +3,7 @@ import PureRenderMixin from 'react-addons-pure-render-mixin';
 import RequestPromise from '../../utils/RequestPromise';
 import { PatientRequests } from '../../RequestBuilder';
 import { fromJS } from 'immutable';
+import { toastr } from 'react-redux-toastr';
 
 import { PosologyView } from '../posology/PosologyView';
 import { DrugBoxView } from '../boxes/DrugBoxView';
@@ -33,6 +34,8 @@ export const PatientView = React.createClass({
     onUpdateAny() {
         return RequestPromise(PatientRequests().get( this.getPatientID() )).then((body) => {
             this.setState({ patient : fromJS(body) });
+        }).catch((error) => {
+            toastr.error('Updated patient fetch failed: ' + error.message);
         });
     },
 

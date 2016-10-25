@@ -4,6 +4,7 @@ import { DrugRequests } from '../../RequestBuilder';
 import { fromJS } from 'immutable';
 import DrugSearchItem from './DrugSearchItem';
 import SearchBar from '../SearchBar';
+import { toastr } from 'react-redux-toastr';
 
 import { Modal, Button, Col, ListGroup } from 'react-bootstrap';
 
@@ -18,6 +19,8 @@ export default React.createClass({
     componentDidMount() {
         RequestPromise(DrugRequests().getAll()).then((body) => {
             this.setState({ drugs : fromJS(body) });
+        }).catch((error) => {
+            toastr.error('Fetching drugs failed: ' + error.message);
         });
     },
 
@@ -46,6 +49,8 @@ export default React.createClass({
         if (value.length > 2) {
             RequestPromise(DrugRequests().search(value)).then((body) => {
                 this.setState({ searchDrugs : fromJS(body) });
+            }).catch((error) => {
+                toastr.error('Search failed: ' + error.message);
             });
         } else {
             this.setState({ searchDrugs : undefined });

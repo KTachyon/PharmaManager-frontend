@@ -5,6 +5,7 @@ import PosologyList from './PosologyList';
 import RequestPromise from '../../utils/RequestPromise';
 import { PosologyRequests } from '../../RequestBuilder';
 import { PosologyForm } from './PosologyForm';
+import { toastr } from 'react-redux-toastr';
 
 import DestructiveOpConfirmation from '../dialog/DestructiveOpConfirmation';
 
@@ -53,7 +54,9 @@ export const PosologyView = React.createClass({
     },
 
     onPosologyDelete(posology) {
-        RequestPromise(PosologyRequests( this.props.patientID ).delete(posology.get('id'))).then(this.props.onServerUpdate);
+        RequestPromise(PosologyRequests( this.props.patientID ).delete(posology.get('id'))).then(this.props.onServerUpdate).catch((error) => {
+            toastr.error('Delete failed: ' + error.message);
+        });
     },
 
     updatePosology(posology) {

@@ -4,6 +4,7 @@ import RequestPromise from '../../utils/RequestPromise';
 import { DrugStockRequests } from '../../RequestBuilder';
 import { fromJS } from 'immutable';
 import StockReportList from './StockReportList';
+import { toastr } from 'react-redux-toastr';
 
 import FullPageLoader from '../loader/FullPageLoader';
 
@@ -23,6 +24,8 @@ export const StockReportView = React.createClass({
     componentDidMount() {
         RequestPromise(DrugStockRequests().getReport()).then((body) => {
             this.setState({ report : fromJS(body) });
+        }).catch((error) => {
+            toastr.error('Report fetch failed: ' + error.message);
         });
     },
 

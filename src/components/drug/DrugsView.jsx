@@ -7,6 +7,7 @@ import RequestPromise from '../../utils/RequestPromise';
 import { DrugRequests } from '../../RequestBuilder';
 import { fromJS } from 'immutable';
 import { DrugForm } from './DrugForm';
+import { toastr } from 'react-redux-toastr';
 
 import DestructiveOpConfirmation from '../dialog/DestructiveOpConfirmation';
 
@@ -22,6 +23,8 @@ export const DrugsView = React.createClass({
     componentDidMount() {
         RequestPromise(DrugRequests().getAll()).then((body) => {
             this.setState({ drugs : fromJS(body) });
+        }).catch((error) => {
+            toastr.error('Drug fetch failed: ' + error.message);
         });
     },
 
@@ -33,6 +36,8 @@ export const DrugsView = React.createClass({
         if (value.length > 2) {
             RequestPromise(DrugRequests().search(value)).then((body) => {
                 this.setState({ searchDrugs : fromJS(body) });
+            }).catch((error) => {
+                toastr.error('Search failed: ' + error.message);
             });
         } else {
             this.setState({ searchDrugs : undefined });
@@ -92,6 +97,8 @@ export const DrugsView = React.createClass({
     onDrugDelete(drug) {
         RequestPromise(DrugRequests().delete(drug.get('id'))).then(() => {
             this.setState({ drugs : this.getDrugs().filter(p => p.get('id') !== drug.get('id')) });
+        }).catch((error) => {
+            toastr.error('Delete failed: ' + error.message);
         });
     },
 

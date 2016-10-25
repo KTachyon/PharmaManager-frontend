@@ -7,6 +7,7 @@ import RequestPromise from '../../utils/RequestPromise';
 import { PatientRequests } from '../../RequestBuilder';
 import { fromJS } from 'immutable';
 import { PatientForm } from './PatientForm';
+import { toastr } from 'react-redux-toastr';
 
 import DestructiveOpConfirmation from '../dialog/DestructiveOpConfirmation';
 
@@ -22,6 +23,8 @@ export const PatientsView = React.createClass({
     componentDidMount() {
         RequestPromise(PatientRequests().getAll()).then((body) => {
             this.setState({ patients : fromJS(body) });
+        }).catch((error) => {
+            toastr.error('Patient fetch failed: ' + error.message);
         });
     },
 
@@ -33,6 +36,8 @@ export const PatientsView = React.createClass({
         if (value.length > 2) {
             RequestPromise(PatientRequests().search(value)).then((body) => {
                 this.setState({ searchPatients : fromJS(body) });
+            }).catch((error) => {
+                toastr.error('Search failed: ' + error.message);
             });
         } else {
             this.setState({ searchPatients : undefined });
@@ -92,6 +97,8 @@ export const PatientsView = React.createClass({
     onPatientDelete(patient) {
         RequestPromise(PatientRequests().delete(patient.get('id'))).then(() => {
             this.setState({ patients : this.getPatients().filter(p => p.get('id') !== patient.get('id')) });
+        }).catch((error) => {
+            toastr.error('Delete failed: ' + error.message);
         });
     },
 
