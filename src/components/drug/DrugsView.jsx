@@ -9,9 +9,10 @@ import { fromJS } from 'immutable';
 import { DrugForm } from './DrugForm';
 import { toastr } from 'react-redux-toastr';
 
+import searchStyle from '../../style/search.css';
 import DestructiveOpConfirmation from '../dialog/DestructiveOpConfirmation';
 
-import { Panel, Col, Button } from 'react-bootstrap';
+import { Glyphicon } from 'react-bootstrap';
 
 export const DrugsView = React.createClass({
     mixins : [PureRenderMixin],
@@ -120,17 +121,13 @@ export const DrugsView = React.createClass({
     },
 
     render: function() {
-        return <Panel>
+        return <div>
             <div ref="placeholder"></div>
-            <Col sm={4}>
+            <div className={searchStyle.searchContainer}>
                 <SearchBar search={this.search} />
-            </Col>
-            <Col sm={4}>
-                <Button onClick={this.createDrug}>Create Drug</Button>
-            </Col>
-            <Col sm={12}>
-                <DrugsList drugs={this.getDrugs()} update={this.updateDrug} delete={this.deleteDrug} />
-            </Col>
-        </Panel>;
+                <Glyphicon glyph="plus" onClick={this.createPatient} className={searchStyle.createBtn} />
+            </div>
+            <DrugsList drugs={this.getDrugs()} update={this.updateDrug} delete={this.deleteDrug} />
+        </div>;
     }
 });

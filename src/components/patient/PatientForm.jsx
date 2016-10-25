@@ -148,11 +148,8 @@ export const PatientForm = React.createClass({
                             <Col componentClass={ControlLabel} sm={2}>
                                 Patient Name
                             </Col>
-                            <Col sm={7}>
+                            <Col sm={8}>
                                 <FormControl type="text" placeholder="Patient Name" value={patient.get('name')} onChange={this.namedValueChanged('name')} />
-                            </Col>
-                            <Col sm={1}>
-                                <Button onClick={this.addProperty}>Add property</Button>
                             </Col>
                         </FormGroup>
                         <FormGroup>

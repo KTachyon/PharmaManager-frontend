@@ -25,7 +25,6 @@ export default React.createClass({
         let descriptor =`${drug.get('name')} (${drug.get('dose')} ${drug.get('unit')}) (${drugBox.get('brand')}) - ${drugBox.get('unitCount')} units`;
 
         return <div>
-            <div id="modalPlaceholder"></div>
             <ListGroupItem>
                 {descriptor}
                 <ButtonToolbar>

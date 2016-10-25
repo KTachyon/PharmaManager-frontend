@@ -4,7 +4,10 @@ import { AuthRequests } from '../RequestBuilder';
 import { toastr } from 'react-redux-toastr';
 
 import { LoginView } from './auth/LoginView';
+import { HeaderView } from './HeaderView';
 import FullPageLoader from './loader/FullPageLoader';
+
+import _ from 'lodash';
 
 export default React.createClass({
 
@@ -47,6 +50,9 @@ export default React.createClass({
             return <LoginView login={this.login} />;
         }
 
-        return React.cloneElement(this.props.children, { logout: this.logout });
+        return <HeaderView
+            content={React.cloneElement(this.props.children, { logout: this.logout })}
+            route={this.props.routes[1]}
+        />;
     }
 });

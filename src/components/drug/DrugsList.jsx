@@ -2,7 +2,7 @@ import React from 'react';
 import PureRenderMixin from 'react-addons-pure-render-mixin';
 import DrugItem from './DrugItem';
 
-import { ListGroup } from 'react-bootstrap';
+import FullPageLoader from '../loader/FullPageLoader';
 
 export default React.createClass({
     mixins : [PureRenderMixin],
@@ -13,13 +13,22 @@ export default React.createClass({
 
     render: function() {
         if (!this.getDrugs()) {
-            return <div>Loading...</div>;
+            return <FullPageLoader />;
         }
 
-        return <ListGroup>
-            {this.getDrugs().map(drug =>
-                <DrugItem key={drug.get('id')} obj={drug} update={this.props.update} delete={this.props.delete} />
-            )}
-        </ListGroup>;
+        let even = true;
+
+        return <div>
+            {this.getDrugs().map((drug) => {
+                even = !even;
+
+                return <DrugItem
+                    key={drug.get('id')}
+                    obj={drug}
+                    even={even}
+                    update={this.props.update}
+                    delete={this.props.delete} />;
+            })}
+        </div>;
     }
 });

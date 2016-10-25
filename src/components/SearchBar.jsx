@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Form, FormControl, FormGroup } from 'react-bootstrap';
+import { FormControl } from 'react-bootstrap';
 
 export default React.createClass({
 
@@ -15,11 +15,7 @@ export default React.createClass({
     },
 
     render() {
-        return <Form>
-            <FormGroup>
-                <FormControl type="text" placeholder="Search..." value={this.state.searchValue} onChange={this.updateSearchValue} />
-            </FormGroup>
-        </Form>;
+        return <FormControl type="text" placeholder="Search..." value={this.state.searchValue} onChange={this.updateSearchValue}  />;
     }
 
 });

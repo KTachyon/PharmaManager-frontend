@@ -1,0 +1,18 @@
+.createBtn {
+    position : absolute;
+    z-index : 1;
+    right : 0;
+    padding : 0 10px;
+    font-size : 20px;
+    cursor : pointer;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.createBtn:hover {
+    color: green;
+}
+
+.searchContainer {
+    position : relative;
+}

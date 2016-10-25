@@ -2,7 +2,7 @@ import React from 'react';
 import PureRenderMixin from 'react-addons-pure-render-mixin';
 import PatientItem from './PatientItem';
 
-import { ListGroup } from 'react-bootstrap';
+import FullPageLoader from '../loader/FullPageLoader';
 
 export default React.createClass({
     mixins : [PureRenderMixin],
@@ -13,13 +13,23 @@ export default React.createClass({
 
     render: function() {
         if (!this.getPatients()) {
-            return <div>Loading...</div>;
+            return <FullPageLoader />;
         }
 
-        return <ListGroup>
-            {this.getPatients().map(patient =>
-                <PatientItem key={patient.get('id')} obj={patient} update={this.props.update} delete={this.props.delete} />
-            )}
-        </ListGroup>;
+        let even = true;
+
+        return <div>
+            {this.getPatients().map((patient) => {
+                even = !even;
+
+                return <PatientItem
+                    key={patient.get('id')}
+                    obj={patient}
+                    even={even}
+                    update={this.props.update}
+                    delete={this.props.delete}
+                />;
+            })}
+        </div>;
     }
 });

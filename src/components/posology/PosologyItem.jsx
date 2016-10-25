@@ -28,7 +28,6 @@ export default React.createClass({
             <p>{descriptor}</p>;
 
         return <div>
-            <div id="modalPlaceholder"></div>
             <ListGroupItem>
                 {finalDescriptor}
                 <ButtonToolbar>
