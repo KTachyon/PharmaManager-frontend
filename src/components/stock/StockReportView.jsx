@@ -3,12 +3,12 @@ import PureRenderMixin from 'react-addons-pure-render-mixin';
 import RequestPromise from '../../utils/RequestPromise';
 import { DrugStockRequests } from '../../RequestBuilder';
 import { fromJS } from 'immutable';
-import StockReportList from './StockReportList';
 import { toastr } from 'react-redux-toastr';
 
 import FullPageLoader from '../loader/FullPageLoader';
 
-import { Panel } from 'react-bootstrap';
+import StockReportItem from './StockReportItem';
+import { ListGroup } from 'react-bootstrap';
 
 export const StockReportView = React.createClass({
     mixins : [PureRenderMixin],
@@ -36,8 +36,13 @@ export const StockReportView = React.createClass({
             return <FullPageLoader />;
         }
 
-        return <Panel>
-            <StockReportList report={report} />
-        </Panel>;
+        return <ListGroup>
+            {this.getReport().map(stockReportItem =>
+                <StockReportItem
+                    key={stockReportItem.get('PatientId') + '_' + stockReportItem.get('DrugId')}
+                    obj={stockReportItem}
+                />
+            )}
+        </ListGroup>;
     }
 });

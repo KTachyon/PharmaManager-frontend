@@ -7,8 +7,6 @@ import { LoginView } from './auth/LoginView';
 import { HeaderView } from './HeaderView';
 import FullPageLoader from './loader/FullPageLoader';
 
-import _ from 'lodash';
-
 export default React.createClass({
 
     getInitialState : function() {

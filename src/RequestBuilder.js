@@ -1,4 +1,4 @@
-const baseURL = 'http://localhost:3010/api/';
+const baseURL = ('production' !== process.env.NODE_ENV) ? 'http://localhost:3010/api/' : '/api/';
 
 let baseCRUD = (identifier, hasSearch = false) => {
     let RequestBuilderObject = {

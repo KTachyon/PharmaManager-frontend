@@ -1,7 +1,9 @@
 import React from 'react';
 import PureRenderMixin from 'react-addons-pure-render-mixin';
 
-import { ListGroupItem, ButtonToolbar, Button } from 'react-bootstrap';
+import itemStyle from '../../style/item.css';
+
+import { Glyphicon } from 'react-bootstrap';
 
 export default React.createClass({
     mixins : [PureRenderMixin],
@@ -20,14 +22,13 @@ export default React.createClass({
 
         let descriptor = `${drug.get('name')} (${drug.get('dose')} ${drug.get('unit')}) @ ${drugStock.get('unitCount')} units`;
 
-        return <div>
-            <div id="modalPlaceholder"></div>
-            <ListGroupItem>
-                {descriptor}
-                <ButtonToolbar>
-                    <Button onClick={this.update}>Update stock</Button>
-                </ButtonToolbar>
-            </ListGroupItem>
+        return <div className={`${itemStyle.item} ${this.props.even ? 'even' : 'odd'}`}>
+            <div className={itemStyle.leftBound}>
+                <p>{descriptor}</p>
+            </div>
+            <div className={itemStyle.rightBound}>
+                <Glyphicon glyph="pencil" className={itemStyle.itemBtn} onClick={this.update} />
+            </div>
         </div>;
     }
 });

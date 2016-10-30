@@ -2,7 +2,7 @@ import React from 'react';
 import PureRenderMixin from 'react-addons-pure-render-mixin';
 import PosologyItem from './PosologyItem';
 
-import { ListGroup } from 'react-bootstrap';
+import FullPageLoader from '../loader/FullPageLoader';
 
 export default React.createClass({
     mixins : [PureRenderMixin],
@@ -13,13 +13,23 @@ export default React.createClass({
 
     render: function() {
         if (!this.getPosologies()) {
-            return <div>Loading...</div>;
+            return <FullPageLoader />;
         }
 
-        return <ListGroup>
-            {this.getPosologies().map(posology =>
-                <PosologyItem key={posology.get('id')} obj={posology} update={this.props.update} delete={this.props.delete} />
-            )}
-        </ListGroup>;
+        let even = true;
+
+        return <div>
+            {this.getPosologies().map((posology) => {
+                even = !even;
+
+                return <PosologyItem
+                    key={posology.get('id')}
+                    obj={posology}
+                    even={even}
+                    update={this.props.update}
+                    delete={this.props.delete}
+                />;
+            })}
+        </div>;
     }
 });

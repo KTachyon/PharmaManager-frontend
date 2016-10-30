@@ -9,7 +9,7 @@ import { toastr } from 'react-redux-toastr';
 
 import DestructiveOpConfirmation from '../dialog/DestructiveOpConfirmation';
 
-import { Panel, Col, Button } from 'react-bootstrap';
+import { Panel, Col, Button, Glyphicon } from 'react-bootstrap';
 
 export const PosologyView = React.createClass({
     mixins : [PureRenderMixin],
@@ -81,7 +81,7 @@ export const PosologyView = React.createClass({
         return <Panel>
             <div ref="placeholder"></div>
             <Col sm={4}>
-                <Button onClick={this.createPosology}>Create Posology</Button>
+                <Button onClick={this.createPosology}> <Glyphicon glyph="plus" /> </Button>
             </Col>
             <Col sm={12}>
                 <PosologyList posologies={this.getPosologies()} update={this.updatePosology} delete={this.deletePosology} />
