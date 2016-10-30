@@ -6,6 +6,7 @@ import RequestPromise from '../utils/RequestPromise';
 import { toastr } from 'react-redux-toastr';
 
 import { Button } from 'react-bootstrap';
+import FullPageLoader from './loader/FullPageLoader';
 
 export const AppView = React.createClass({
     mixins : [PureRenderMixin],
