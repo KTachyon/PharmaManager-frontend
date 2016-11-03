@@ -1,6 +1,6 @@
 import React from 'react';
 import PureRenderMixin from 'react-addons-pure-render-mixin';
-import { ListGroupItem } from 'react-bootstrap';
+import itemStyle from '../../style/item.css';
 
 export default React.createClass({
     mixins : [PureRenderMixin],
@@ -16,10 +16,10 @@ export default React.createClass({
     render() {
         let drug = this.getDrug();
 
-        return <div onClick={this.select}>
-            <ListGroupItem>
-                {`${drug.get('name')} (${drug.get('dose')} ${drug.get('unit')})`}
-            </ListGroupItem>
+        return <div onClick={this.select} className={`${itemStyle.item} ${this.props.even ? itemStyle.even : itemStyle.odd}`}>
+            <div className={itemStyle.leftBound}>
+                <p>{`${drug.get('name')} (${drug.get('dose')} ${drug.get('unit')})`}</p>
+            </div>
         </div>;
     }
 });

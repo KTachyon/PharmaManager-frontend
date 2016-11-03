@@ -1,12 +1,16 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 import RequestPromise from '../../utils/RequestPromise';
 import { DrugRequests } from '../../RequestBuilder';
 import { fromJS } from 'immutable';
 import DrugSearchItem from './DrugSearchItem';
 import SearchBar from '../SearchBar';
 import { toastr } from 'react-redux-toastr';
+import searchStyle from '../../style/search.css';
+import modalListStyle from '../../style/modalList.css';
 
-import { Modal, Button, Col, ListGroup } from 'react-bootstrap';
+import { DrugForm } from './DrugForm';
+import { Modal, Button, Glyphicon } from 'react-bootstrap';
 
 export default React.createClass({
     getInitialState() {
@@ -57,22 +61,39 @@ export default React.createClass({
         }
     },
 
+    createDrug() {
+        var container = ReactDOM.findDOMNode(this.refs.placeholder);
+
+        let closeModal = () => {
+            ReactDOM.unmountComponentAtNode(container);
+        };
+
+        ReactDOM.render(
+            <DrugForm close={closeModal} onUpdate={this.select} />,
+            container
+        );
+    },
+
     render() {
+        let even = true;
+
         return <Modal bsSize="small" show={this.state.show} onExited={this.onExit} onHide={this.cancel}>
             <Modal.Header closeButton>
                 <Modal.Title>{this.props.title}</Modal.Title>
             </Modal.Header>
-            <Modal.Body style={{ height : '314px' }}>
-                <Col sm={12}>
+            <Modal.Body>
+                <div ref="placeholder"></div>
+                <div className={searchStyle.searchContainer}>
                     <SearchBar search={this.search} />
-                </Col>
-                <Col sm={12} style={{ height : '250px', overflow : 'auto' }}>
-                    <ListGroup>
-                        {this.getDrugs().map(drug =>
-                            <DrugSearchItem key={drug.get('id')} obj={drug} onSelect={this.select} />
-                        )}
-                    </ListGroup>
-                </Col>
+                    <Glyphicon glyph="plus" onClick={this.createDrug} className={searchStyle.createBtn} />
+                </div>
+                <div className={modalListStyle.modalList}>
+                    {this.getDrugs().map((drug) => {
+                        even = !even;
+
+                        return <DrugSearchItem key={drug.get('id')} obj={drug} even={even} onSelect={this.select} />;
+                    })}
+                </div>
             </Modal.Body>
             <Modal.Footer>
                 <Button onClick={this.cancel}>Cancel</Button>
