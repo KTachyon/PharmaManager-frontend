@@ -2,7 +2,6 @@ import React from 'react';
 import PureRenderMixin from 'react-addons-pure-render-mixin';
 
 import itemStyle from '../../style/item.css';
-
 import { Glyphicon } from 'react-bootstrap';
 
 export default React.createClass({
@@ -16,18 +15,26 @@ export default React.createClass({
         return this.props.update(this.getDrugStock());
     },
 
-    render() {
+    createDrugBox() {
+        return this.props.createBox(this.getDrugStock());
+    },
+
+    getDrugDescriptor() {
         let drugStock = this.getDrugStock();
         let drug = drugStock.get('drug');
 
-        let descriptor = `${drug.get('name')} (${drug.get('dose')} ${drug.get('unit')}) @ ${drugStock.get('unitCount')} units`;
+        return `${drug.get('name')} (${drug.get('dose')} ${drug.get('unit')}) @ ${drugStock.get('unitCount')} units`;
+    },
 
+    render() {
         return <div className={`${itemStyle.item} ${this.props.even ? itemStyle.even : itemStyle.odd}`}>
+            <div ref="placeholder"></div>
             <div className={itemStyle.leftBound}>
-                <p>{descriptor}</p>
+                <p>{this.getDrugDescriptor()}</p>
             </div>
             <div className={itemStyle.rightBound}>
                 <Glyphicon glyph="pencil" className={itemStyle.itemBtn} onClick={this.update} />
+                <Glyphicon glyph="plus" className={itemStyle.itemBtn} onClick={this.createDrugBox} />
             </div>
         </div>;
     }

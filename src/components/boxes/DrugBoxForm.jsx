@@ -25,7 +25,7 @@ export const DrugBoxForm = React.createClass({
         return {
             selfShow : true,
             drugBox : drugBox,
-            drug : drugBox.get('drug')
+            drug : drugBox.get('drug') || this.props.drug
         };
     },
 

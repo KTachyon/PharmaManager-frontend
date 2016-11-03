@@ -6,7 +6,6 @@ import { fromJS } from 'immutable';
 import { toastr } from 'react-redux-toastr';
 
 import { PosologyView } from '../posology/PosologyView';
-import { DrugBoxView } from '../boxes/DrugBoxView';
 import { DrugStockView } from '../stock/DrugStockView';
 import { Panel } from 'react-bootstrap';
 
@@ -56,9 +55,6 @@ export const PatientView = React.createClass({
             <hr />
             <h2>Stock</h2>
             <DrugStockView patientID={this.getPatientID()} onServerUpdate={this.onUpdateAny} drugStocks={patient.get('DrugStocks')} />
-            <hr />
-            <h2>Boxes</h2>
-            <DrugBoxView patientID={this.getPatientID()} onServerUpdate={this.onUpdateAny} drugBoxes={patient.get('DrugBoxes')} />
         </Panel>;
     }
 });

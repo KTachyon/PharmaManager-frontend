@@ -27,6 +27,7 @@ export default React.createClass({
                     obj={drugStock}
                     even={even}
                     update={this.props.update}
+                    createBox={this.props.createBox}
                 />;
             })}
         </div>;
