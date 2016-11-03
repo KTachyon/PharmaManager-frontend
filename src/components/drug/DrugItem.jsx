@@ -24,7 +24,7 @@ export default React.createClass({
     render() {
         let drug = this.getDrug();
 
-        return <div className={`${itemStyle.item} ${this.props.even ? 'even' : 'odd'}`}>
+        return <div className={`${itemStyle.item} ${this.props.even ? itemStyle.even : itemStyle.odd}`}>
             <div className={itemStyle.leftBound}>
                 <p><Link to={`drugs/${drug.get('id')}`}>{`${drug.get('name')} (${drug.get('dose')} ${drug.get('unit')})`}</Link></p>
             </div>

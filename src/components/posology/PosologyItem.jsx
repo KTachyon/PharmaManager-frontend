@@ -30,7 +30,7 @@ export default React.createClass({
             <p style="color:red">{descriptor + '(CANCELLED)'}</p> :
             <p>{descriptor}</p>;
 
-        return <div className={`${itemStyle.item} ${this.props.even ? 'even' : 'odd'}`}>
+        return <div className={`${itemStyle.item} ${this.props.even ? itemStyle.even : itemStyle.odd}`}>
             <div className={itemStyle.leftBound}>
                 {finalDescriptor}
             </div>

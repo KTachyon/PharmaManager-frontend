@@ -22,7 +22,7 @@ export default React.createClass({
     },
 
     render() {
-        return <div className={`${itemStyle.item} ${this.props.even ? 'even' : 'odd'}`}>
+        return <div className={`${itemStyle.item} ${this.props.even ? itemStyle.even : itemStyle.odd}`}>
             <div className={itemStyle.leftBound}>
                 <p><Link to={`patients/${this.getPatient().get('id')}`}>{this.getPatient().get('name')}</Link></p>
             </div>

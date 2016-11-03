@@ -22,7 +22,7 @@ export default React.createClass({
 
         let descriptor = `${drug.get('name')} (${drug.get('dose')} ${drug.get('unit')}) @ ${drugStock.get('unitCount')} units`;
 
-        return <div className={`${itemStyle.item} ${this.props.even ? 'even' : 'odd'}`}>
+        return <div className={`${itemStyle.item} ${this.props.even ? itemStyle.even : itemStyle.odd}`}>
             <div className={itemStyle.leftBound}>
                 <p>{descriptor}</p>
             </div>

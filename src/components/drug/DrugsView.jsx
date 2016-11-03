@@ -125,7 +125,7 @@ export const DrugsView = React.createClass({
             <div ref="placeholder"></div>
             <div className={searchStyle.searchContainer}>
                 <SearchBar search={this.search} />
-                <Glyphicon glyph="plus" onClick={this.createPatient} className={searchStyle.createBtn} />
+                <Glyphicon glyph="plus" onClick={this.createDrug} className={searchStyle.createBtn} />
             </div>
             <DrugsList drugs={this.getDrugs()} update={this.updateDrug} delete={this.deleteDrug} />
         </div>;

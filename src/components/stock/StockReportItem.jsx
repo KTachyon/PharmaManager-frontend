@@ -27,7 +27,7 @@ export default React.createClass({
 
                     let drug = stock.get('Drug');
 
-                    return <div key={`${patient.get('id')}_${drug.get('id')}`} className={`${itemStyle.item} ${even ? 'even' : 'odd'}`}>
+                    return <div key={`${patient.get('id')}_${drug.get('id')}`} className={`${itemStyle.item} ${even ? itemStyle.even : itemStyle.odd}`}>
                         <div className={itemStyle.leftBound}>
                             <p><Link to={`drugs/${drug.get('id')}`}>{`${drug.get('name')} (${drug.get('dose')} ${drug.get('unit')})`}</Link></p>
                         </div>
